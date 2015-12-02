@@ -69,16 +69,16 @@ final class VerisignDnsContentHandlers {
     private int ttl;
 
     ZoneHandler() {
-      super("ns3:getZoneInfoRes");
+      super("getZoneInfoRes");
     }
 
     @Override
     protected void processElValue(String currentEl, char[] ch, int start, int length) {
-      if ("ns3:domainName".equals(currentEl)) {
+      if ("domainName".equals(currentEl)) {
         domainName = val(ch, start, length);
-      } else if ("ns3:email".equals(currentEl)) {
+      } else if ("email".equals(currentEl)) {
         email = val(ch, start, length);
-      } else if ("ns3:ttl".equals(currentEl)) {
+      } else if ("ttl".equals(currentEl)) {
         ttl = Integer.valueOf(val(ch, start, length));
       }
     }
@@ -100,16 +100,16 @@ final class VerisignDnsContentHandlers {
     private List<Zone> zones = new ArrayList<Zone>();
 
     ZoneListHandler() {
-      super("ns3:getZoneListRes");
+      super("getZoneListRes");
     }
 
     @Override
     protected void processElValue(String currentEl, char[] ch, int start, int length) {
 
-      if ("ns3:totalCount".equals(currentEl)) {
+      if ("totalCount".equals(currentEl)) {
         String value = val(ch, start, length);
         count = Integer.valueOf(value);
-      } else if ("ns3:domainName".equals(currentEl)) {
+      } else if ("domainName".equals(currentEl)) {
         String value = val(ch, start, length);
         zones.add(Zone.create(value, value, 86400, "mdnshelp@verisign.com"));
       }
@@ -126,14 +126,14 @@ final class VerisignDnsContentHandlers {
     private List<ResourceRecord> rrList = new ArrayList<ResourceRecord>();
 
     RRHandler() {
-      super("ns3:getResourceRecordListRes");
+      super("getResourceRecordListRes");
     }
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes)
         throws SAXException {
       super.startElement(uri, localName, qName, attributes);
-      if ("ns3:resourceRecord".equals(qName)) {
+      if ("resourceRecord".equals(qName)) {
         rrList.add(new ResourceRecord());
       }
     }
@@ -146,17 +146,17 @@ final class VerisignDnsContentHandlers {
 
       ResourceRecord resourceRecord = rrList.get(rrList.size() - 1);
       String value = val(ch, start, length);
-      if ("ns3:totalCount".equals(currentEl)) {
+      if ("totalCount".equals(currentEl)) {
         count = Integer.valueOf(value);
-      } else if ("ns3:resourceRecordId".equals(currentEl)) {
+      } else if ("resourceRecordId".equals(currentEl)) {
         resourceRecord.id = value;
-      } else if ("ns3:owner".equals(currentEl)) {
+      } else if ("owner".equals(currentEl)) {
         resourceRecord.name = value;
-      } else if ("ns3:type".equals(currentEl)) {
+      } else if ("type".equals(currentEl)) {
         resourceRecord.type = value;
-      } else if ("ns3:rData".equals(currentEl)) {
+      } else if ("rData".equals(currentEl)) {
         resourceRecord.rdata = value;
-      } else if ("ns3:ttl".equals(currentEl)) {
+      } else if ("ttl".equals(currentEl)) {
         resourceRecord.ttl = Integer.valueOf(value);
       }
     }

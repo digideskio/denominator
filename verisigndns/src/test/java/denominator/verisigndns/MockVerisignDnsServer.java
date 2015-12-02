@@ -83,7 +83,7 @@ public class MockVerisignDnsServer extends VerisignDnsProvider implements TestRu
   static final class Module {
 
   }
-  
+    
   static final String FAULT_TEMPLATE = 
       "<ns3:Fault xmlns:ns2=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns3=\"http://www.w3.org/2003/05/soap-envelope\">"
       + "   <ns3:Code>"
@@ -98,5 +98,6 @@ public class MockVerisignDnsServer extends VerisignDnsProvider implements TestRu
       + "              <ns3:reason code=\"%s\" description=\"%s\"/>"
       + "       </ns3:dnsaWSRes>"
       + "   </ns3:Detail>"
-      + "</ns3:Fault>";
+      + "</ns3:Fault>";  
+   
 }

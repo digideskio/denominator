@@ -48,7 +48,7 @@ public class VerisignDnsProviderDynamicUpdateMockTest {
   @Test
   public void dynamicCredentialUpdates() throws Exception {
     server.enqueue(new MockResponse()
-        .setBody("<ns3:getResourceRecordListRes></ns3:getResourceRecordListRes>"));
+        .setBody("<getResourceRecordListRes></getResourceRecordListRes>"));
 
     AtomicReference<Credentials> dynamicCredentials =
         new AtomicReference<Credentials>(server.credentials());
@@ -61,7 +61,7 @@ public class VerisignDnsProviderDynamicUpdateMockTest {
     dynamicCredentials.set(ListCredentials.from("bob", "comeon"));
     server.credentials("bob", "comeon");
     server.enqueue(new MockResponse()
-        .setBody("<ns3:getResourceRecordListRes></ns3:getResourceRecordListRes>"));
+        .setBody("<getResourceRecordListRes></getResourceRecordListRes>"));
 
     api.zones().iterator().hasNext();
     server.assertRequest();

@@ -19,18 +19,19 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void iteratorWhenPresent() throws Exception {
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+      .enqueue(new MockResponse()
+      .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+          + "   <callSuccess>true</callSuccess>"
+          + "   <totalCount>1</totalCount>"
+          + "   <resourceRecord>"
+          + "       <resourceRecordId>3194811</resourceRecordId>"
+          + "       <owner>www.denominator.io.</owner>"
+          + "       <type>A</type>"
+          + "       <ttl>86400</ttl>"
+          + "       <rData>127.0.0.1</rData>"
+          + "   </resourceRecord>"
+          + "</getResourceRecordListRes>"));
+    
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
 
@@ -42,7 +43,7 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void iteratorWhenAbsent() throws Exception {
     server.enqueue(new MockResponse()
-        .setBody("<ns3:getResourceRecordListRes></ns3:getResourceRecordListRes>"));
+        .setBody("<getResourceRecordListRes></getResourceRecordListRes>"));
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
@@ -52,18 +53,18 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void iterateByNameWhenPresent() throws Exception {
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+      .enqueue(new MockResponse()
+      .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+          + "   <callSuccess>true</callSuccess>"
+          + "   <totalCount>1</totalCount>"
+          + "   <resourceRecord>"
+          + "       <resourceRecordId>3194811</resourceRecordId>"
+          + "       <owner>www.denominator.io.</owner>"
+          + "       <type>A</type>"
+          + "       <ttl>86400</ttl>"
+          + "       <rData>127.0.0.1</rData>"
+          + "   </resourceRecord>"
+          + "</getResourceRecordListRes>"));
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
@@ -76,7 +77,7 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void iterateByNameWhenAbsent() throws Exception {
     server.enqueue(new MockResponse()
-        .setBody("<ns3:getResourceRecordListRes></ns3:getResourceRecordListRes>"));
+        .setBody("<getResourceRecordListRes></getResourceRecordListRes>"));
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
@@ -86,23 +87,25 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void putFirstRecordCreatesNewRRSet() throws Exception {
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>0</ns3:totalCount>" + "</ns3:getResourceRecordListRes>"));
+    .enqueue(new MockResponse()
+    .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+        + "   <callSuccess>true</callSuccess>"
+        + "   <totalCount>0</totalCount>"
+        + "</getResourceRecordListRes>"));
+    
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+      .enqueue(new MockResponse()
+      .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+          + "   <callSuccess>true</callSuccess>"
+          + "   <totalCount>1</totalCount>"
+          + "   <resourceRecord>"
+          + "       <resourceRecordId>3194811</resourceRecordId>"
+          + "       <owner>www.denominator.io.</owner>"
+          + "       <type>A</type>"
+          + "       <ttl>86400</ttl>"
+          + "       <rData>127.0.0.1</rData>"
+          + "   </resourceRecord>"
+          + "</getResourceRecordListRes>"));
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
@@ -115,31 +118,31 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void putSameRecordNoOp() throws Exception {
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+      .enqueue(new MockResponse()
+      .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+          + "   <callSuccess>true</callSuccess>"
+          + "   <totalCount>1</totalCount>"
+          + "   <resourceRecord>"
+          + "       <resourceRecordId>3194811</resourceRecordId>"
+          + "       <owner>www.denominator.io.</owner>"
+          + "       <type>A</type>"
+          + "       <ttl>86400</ttl>"
+          + "       <rData>127.0.0.1</rData>"
+          + "   </resourceRecord>"
+          + "</getResourceRecordListRes>"));
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+      .enqueue(new MockResponse()
+      .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+          + "   <callSuccess>true</callSuccess>"
+          + "   <totalCount>1</totalCount>"
+          + "   <resourceRecord>"
+          + "       <resourceRecordId>3194811</resourceRecordId>"
+          + "       <owner>www.denominator.io.</owner>"
+          + "       <type>A</type>"
+          + "       <ttl>86400</ttl>"
+          + "       <rData>127.0.0.1</rData>"
+          + "   </resourceRecord>"
+          + "</getResourceRecordListRes>"));
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
@@ -153,38 +156,39 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void putOneRecordReplacesRRSet() throws Exception {
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>2</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194802</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.11</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www1.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.12</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+    .enqueue(new MockResponse()
+        .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "   <callSuccess>true</callSuccess>"
+            + "   <totalCount>2</totalCount>"
+            + "   <resourceRecord>"
+            + "       <resourceRecordId>3194811</resourceRecordId>"
+            + "       <owner>www.denominator.io.</owner>"
+            + "       <type>A</type>"
+            + "       <ttl>86400</ttl>"
+            + "       <rData>127.0.0.1</rData>"
+            + "   </resourceRecord>"
+            + "   <resourceRecord>"
+            + "       <resourceRecordId>3194812</resourceRecordId>"
+            + "       <owner>www1.denominator.io.</owner>"
+            + "       <type>A</type>"
+            + "       <ttl>86400</ttl>"
+            + "       <rData>127.0.0.2</rData>"
+            + "   </resourceRecord>"            
+            + "</getResourceRecordListRes>"));
+    
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+      .enqueue(new MockResponse()
+        .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "   <callSuccess>true</callSuccess>"
+            + "   <totalCount>1</totalCount>"
+            + "   <resourceRecord>"
+            + "       <resourceRecordId>3194811</resourceRecordId>"
+            + "       <owner>www.denominator.io.</owner>"
+            + "       <type>A</type>"
+            + "       <ttl>86400</ttl>"
+            + "       <rData>127.0.0.1</rData>"
+            + "   </resourceRecord>"
+            + "</getResourceRecordListRes>"));
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
@@ -197,22 +201,23 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   @Test
   public void deleteWhenPresent() throws Exception {
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+      .enqueue(new MockResponse()
+        .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "   <callSuccess>true</callSuccess>"
+            + "   <totalCount>1</totalCount>"
+            + "   <resourceRecord>"
+            + "       <resourceRecordId>3194811</resourceRecordId>"
+            + "       <owner>www.denominator.io.</owner>"
+            + "       <type>A</type>"
+            + "       <ttl>86400</ttl>"
+            + "       <rData>127.0.0.1</rData>"
+            + "   </resourceRecord>"
+            + "</getResourceRecordListRes>"));
     server
-        .enqueue(new MockResponse()
-            .setBody("<ns3:dnsaWSRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>" + "</ns3:dnsaWSRes>"));
+      .enqueue(new MockResponse()
+        .setBody("<dnsaWSRes:dnsaWSRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:dnsaWSRes=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "     <callSuccess>false</callSuccess>" 
+            + "</dnsaWSRes:dnsaWSRes>"));
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =
         server.connect().api().recordSetsInZone("denominator.io");
@@ -223,17 +228,18 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   public void deleteWhenAbsent() throws Exception {
     server
         .enqueue(new MockResponse()
-            .setBody("<ns3:getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-                + "   <ns3:callSuccess>true</ns3:callSuccess>"
-                + "   <ns3:totalCount>1</ns3:totalCount>"
-                + "   <ns3:resourceRecord>"
-                + "       <ns3:resourceRecordId>3194811</ns3:resourceRecordId>"
-                + "       <ns3:owner>www.denominator.io.</ns3:owner>"
-                + "       <ns3:type>A</ns3:type>"
-                + "       <ns3:ttl>86400</ns3:ttl>"
-                + "       <ns3:rData>127.0.0.1</ns3:rData>"
-                + "   </ns3:resourceRecord>"
-                + "</ns3:getResourceRecordListRes>"));
+            .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+                + "   <callSuccess>true</callSuccess>"
+                + "   <totalCount>1</totalCount>"
+                + "   <resourceRecord>"
+                + "       <resourceRecordId>3194811</resourceRecordId>"
+                + "       <owner>www.denominator.io.</owner>"
+                + "       <type>A</type>"
+                + "       <ttl>86400</ttl>"
+                + "       <rData>127.0.0.1</rData>"
+                + "   </resourceRecord>"
+                + "</getResourceRecordListRes>"));
+    
     server.enqueue(new MockResponse());
 
     AllProfileResourceRecordSetApi recordSetsInZoneApi =

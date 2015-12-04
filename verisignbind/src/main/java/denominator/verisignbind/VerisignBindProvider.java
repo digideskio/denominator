@@ -12,7 +12,6 @@ import javax.inject.Singleton;
 import com.google.gson.TypeAdapter;
 
 import dagger.Provides;
-import denominator.AllProfileResourceRecordSetApi;
 import denominator.BasicProvider;
 import denominator.CheckConnection;
 import denominator.DNSApiManager;
@@ -20,6 +19,7 @@ import denominator.ResourceRecordSetApi;
 import denominator.ZoneApi;
 import denominator.config.GeoUnsupported;
 import denominator.config.NothingToClose;
+import denominator.config.OnlyBasicResourceRecordSets;
 import denominator.config.WeightedUnsupported;
 import denominator.verisignbind.VerisignBindAdapters.ResourceRecordListAdapter;
 import denominator.verisignbind.VerisignBindAdapters.ZoneListAdapter;
@@ -68,8 +68,8 @@ public class VerisignBindProvider extends BasicProvider {
     return options;
   }
 
-  @dagger.Module(injects = {DNSApiManager.class}, complete = false, includes = {
-      NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class, FeignModule.class})
+  @dagger.Module(injects = {DNSApiManager.class}, complete = false,  overrides = true, includes = {
+      NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class, OnlyBasicResourceRecordSets.class, FeignModule.class})
   public static final class Module {
 
     @Provides
@@ -90,14 +90,6 @@ public class VerisignBindProvider extends BasicProvider {
         VerisignBindResourceRecordSetApi.Factory factory) {
       return factory;
     }
-
-    @Provides
-    @Singleton
-    AllProfileResourceRecordSetApi.Factory provideAllProfileResourceRecordSetApiFactory(
-        VerisignBindAllProfileResourceRecordSetApi.Factory factory) {
-      return factory;
-    }
-
   }
 
   @dagger.Module(injects = VerisignBindResourceRecordSetApi.Factory.class, complete = false)
@@ -132,7 +124,6 @@ public class VerisignBindProvider extends BasicProvider {
           .options(options)
           .encoder(new GsonEncoder())
           .decoder(decoder)
-//          .errorDecoder(new VerisignBindErrorDecoder(decoder))
           .build();
     }
 

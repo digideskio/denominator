@@ -1,13 +1,10 @@
 package denominator.verisignbind;
 
 import static denominator.common.Preconditions.checkNotNull;
-import static feign.Util.UTF_8;
-import static java.lang.String.format;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 
@@ -65,7 +62,7 @@ final class VerisignBindTarget implements Target<VerisignBind> {
 
     in.insert(0, url());
     in.header("Host", URI.create(in.url()).getHost());
-    // in.header("X-Auth-Token", urlAndToken.tokenId);
+    // in.header("X-Auth-Token", token);
     in.header("Content-Type", "application/json");
     return in.request();
   }

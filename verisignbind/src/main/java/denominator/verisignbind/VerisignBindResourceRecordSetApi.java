@@ -55,6 +55,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
         new ArrayList<Map<String, Object>>(rrset.records());
 
     for (ResourceRecord record : api.getResourceRecords(zoneName)) {
+//      System.out.println("Found existing record: " + record.getName());
       if (rrset.name().equals(record.getName()) && rrset.type().equals(record.getType())) {
         Map<String, Object> rdata = getRRTypeAndRdata(record.getType(), record.getRdata());
         if (recordsLeftToCreate.contains(rdata)) {
@@ -64,10 +65,12 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
               continue;
             }
             record.setTtl(rrset.ttl());
-            api.updateResourceRecord(zoneName, record.getName(), record.getTtl());
+            api.updateResourceRecord(zoneName, record.getName(), record.getTtl(), record.getRdata());
+//            System.out.println("updating " + record.getName());
           }
         } else {
           api.deleteResourceRecord(zoneName, record.getName());
+//          System.out.println("deleting " + record.getName());
         }
       }
     }
@@ -82,6 +85,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
       record.setRdata(join(' ', mutable.values().toArray()));
       api.createResourceRecord(zoneName, record.getName(), record.getType(), record.getTtl(),
           record.getRdata());
+//      System.out.println("creating " + record.getName());
     }
 
   }

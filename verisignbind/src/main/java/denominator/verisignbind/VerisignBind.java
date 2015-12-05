@@ -39,7 +39,7 @@ interface VerisignBind {
   @RequestLine("PUT /zones/{zone_name}/records/{name}")
   @Body("%7B\"ttl\":\"{ttl}\"%7D")
   void updateResourceRecord(@Param("zone_name") String zoneName, @Param("name") String name,
-      @Param("ttl") int ttl);
+      @Param("ttl") int ttl, @Param("rdata") String rdata);
 
   @RequestLine("GET /zones/{zone_name}/records")
   List<ResourceRecord> getResourceRecords(@Param("zone_name") String zoneName);

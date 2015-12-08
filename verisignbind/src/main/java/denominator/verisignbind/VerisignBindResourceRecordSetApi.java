@@ -55,7 +55,6 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
         new ArrayList<Map<String, Object>>(rrset.records());
 
     for (ResourceRecord record : api.getResourceRecords(zoneName)) {
-//      System.out.println("Found existing record: " + record.getName());
       if (rrset.name().equals(record.getName()) && rrset.type().equals(record.getType())) {
         Map<String, Object> rdata = getRRTypeAndRdata(record.getType(), record.getRdata());
         if (recordsLeftToCreate.contains(rdata)) {
@@ -66,11 +65,9 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
             }
             record.setTtl(rrset.ttl());
             api.updateResourceRecord(zoneName, record.getName(), record.getTtl(), record.getRdata());
-//            System.out.println("updating " + record.getName());
           }
         } else {
           api.deleteResourceRecord(zoneName, record.getName());
-//          System.out.println("deleting " + record.getName());
         }
       }
     }
@@ -78,16 +75,19 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
     ResourceRecord record = new ResourceRecord();
     record.setName(rrset.name());
     record.setType(rrset.type());
-    record.setTtl(rrset.ttl());
+
+    if (rrset.ttl() != null) {
+      record.setTtl(rrset.ttl());
+    } else {
+      record.setTtl(86400);
+    }
 
     for (Map<String, Object> rdata : recordsLeftToCreate) {
       LinkedHashMap<String, Object> mutable = new LinkedHashMap<String, Object>(rdata);
       record.setRdata(join(' ', mutable.values().toArray()));
       api.createResourceRecord(zoneName, record.getName(), record.getType(), record.getTtl(),
           record.getRdata());
-//      System.out.println("creating " + record.getName());
     }
-
   }
 
   @Override
@@ -114,19 +114,9 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
       return new VerisignBindResourceRecordSetApi(api, name);
     }
   }
-  
-  public static Map<String, Object> getRRTypeAndRdata(String type, String rdata) {
 
+  public static Map<String, Object> getRRTypeAndRdata(String type, String rdata) {
     rdata = rdata.replace("\"", "");
-    try {
-      if ("AAAA".equals(type)) {
-        rdata = rdata.toUpperCase();
-      }
-      return Util.toMap(type, rdata);
-    } catch (IllegalArgumentException e) {
-      Map<String, Object> map = new LinkedHashMap<String, Object>();
-      map.put(type, rdata);
-      return map;
-    }
+    return Util.toMap(type, rdata);
   }
 }

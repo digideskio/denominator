@@ -94,26 +94,16 @@ final class VerisignBindAdapters {
     @Override
     public List<X> read(JsonReader reader) throws IOException {
       List<X> elements = new LinkedList<X>();
+      reader.beginArray();
       reader.beginObject();
-      while (reader.hasNext()) {
-        String nextName = reader.nextName();
-        if (jsonKey().equals(nextName)) {
-          reader.beginArray();
-          while (reader.hasNext()) {
-            reader.beginObject();
-            elements.add(build(reader));
-            reader.endObject();
-          }
-          reader.endArray();
-        } else {
-          reader.skipValue();
-        }
-      }
+      elements.add(build(reader));
       reader.endObject();
+      reader.endArray();         
+      
       Collections.sort(elements, toStringComparator());
       return elements;
     }
-
+    
     @Override
     public void write(JsonWriter out, List<X> value) throws IOException {
       throw new UnsupportedOperationException();

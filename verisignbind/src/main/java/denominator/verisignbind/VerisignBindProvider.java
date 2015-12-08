@@ -32,7 +32,7 @@ import feign.gson.GsonEncoder;
 
 public class VerisignBindProvider extends BasicProvider {
   // private static final String DEFAULT_URL = "http://10.239.30.206:8001/api/v1/";
-  private static final String DEFAULT_URL = "http://127.0.0.1:8001/api/v1/";
+  private static final String DEFAULT_URL = "http://127.0.0.1:8080/api/v1/";
 
   private final String url;
 

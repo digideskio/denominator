@@ -32,14 +32,14 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
   @Override
   public String put(Zone zone) {
     try {
-      api.createZone(zone.name(), zone.ttl(), zone.email());
+      zone = api.createZone(zone.name(), zone.ttl(), zone.email());
     } catch (FeignException e) {
       if (e.getMessage().indexOf(" 409 ") == -1) {
         throw e;
       }
     }
 
-    api.updateZone(zone.name(), zone.ttl(), zone.email());
+    api.updateZone(zone.id(), zone.name(), zone.ttl(), zone.email());
     return zone.name();
   }
 

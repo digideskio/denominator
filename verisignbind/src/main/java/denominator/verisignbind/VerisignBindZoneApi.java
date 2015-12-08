@@ -34,7 +34,7 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
     try {
       zone = api.createZone(zone.name(), zone.ttl(), zone.email());
     } catch (FeignException e) {
-      if (e.getMessage().indexOf(" 409 ") == -1) {
+      if (e.getMessage().indexOf(VerisignBindException.ZONE_ALREADY_EXISTS) == -1) {
         throw e;
       }
     }
@@ -48,7 +48,7 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
     try {
       api.deleteZone(name);
     } catch (FeignException e) {
-      if (e.getMessage().indexOf(" 404 ") == -1) {
+      if (e.getMessage().indexOf(VerisignBindException.ZONE_NOT_FOUND) == -1) {
         throw e;
       }
     }

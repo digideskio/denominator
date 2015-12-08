@@ -27,7 +27,7 @@ public class VerisignBindZoneApiMockTest {
 
   @Test
   public void iteratorWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"zones\": [] }"));
+    server.enqueue(new MockResponse().setBody("[{}]"));
     ZoneApi api = server.connect().api().zones();
     assertThat(api.iterator()).isEmpty();
 
@@ -46,7 +46,7 @@ public class VerisignBindZoneApiMockTest {
 
   @Test
   public void iterateByNameWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"zones\": [] }"));
+    server.enqueue(new MockResponse().setBody("[{}]"));
     ZoneApi api = server.connect().api().zones();
     assertThat(api.iterateByName("denominator.io")).isEmpty();
 
@@ -57,19 +57,19 @@ public class VerisignBindZoneApiMockTest {
   public void putWhenPresent() throws Exception {
     server.enqueue(new MockResponse().setResponseCode(409).setBody(
         "{\"code\": 409, \"reason\": \"duplicate zone\"}"));
-    server.enqueue(new MockResponse().setBody(zonesResponse));
+    server.enqueue(new MockResponse().setBody(zoneResponse));
     server.enqueue(new MockResponse().setBody(zonesResponse));
 
     ZoneApi api = server.connect().api().zones();
 
-    Zone zone = Zone.create(null, "denominator.io", 86400, "nil@denominator.io");
+    Zone zone = Zone.create("denominator.io", "denominator.io", 86400, "nil@denominator.io");
     assertThat(api.put(zone)).isEqualTo(zone.name());
 
     server.assertRequest().hasMethod("POST").hasPath("/zones")
         .hasBody("{\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
 
-    server.assertRequest().hasMethod("PUT").hasPath("/zones")
-        .hasBody("{\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
+    server.assertRequest().hasMethod("PUT").hasPath("/zones/denominator.io")
+        .hasBody("{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
   }
 
   @Test
@@ -112,6 +112,6 @@ public class VerisignBindZoneApiMockTest {
       + "  \"name\": \"denominator.io\",\n" + "  \"ttl\": 86400,\n"
       + "  \"email\": \"nil@denominator.io\"\n" + "}\n";
 
-  static String zonesResponse = "{\n" + "  \"zones\": [\n" + zoneResponse + "  ]\n" + "}";
+  static String zonesResponse = "[\n" + zoneResponse + "]\n";
 
 }

@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.bouncycastle.util.encoders.Base64;
+
 import denominator.Credentials;
 import denominator.Provider;
 import feign.Request;
@@ -62,9 +64,17 @@ final class VerisignBindTarget implements Target<VerisignBind> {
 
     in.insert(0, url());
     in.header("Host", URI.create(in.url()).getHost());
-    // in.header("X-Auth-Token", token);
     in.header("Content-Type", "application/json");
+    
+    String authHeader = getAuthHeader(username, password);    
+    in.header("Authorization", authHeader);
+        
     return in.request();
   }
 
+  private String getAuthHeader(String username, String password) {
+    String auth = username + ":" + password;
+    String encoding = Base64.toBase64String(auth.getBytes());
+    return "Basic " + encoding;
+  }
 }

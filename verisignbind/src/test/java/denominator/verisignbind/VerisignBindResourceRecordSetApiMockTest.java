@@ -37,7 +37,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void iteratorWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"records\": [] }"));
+    server.enqueue(new MockResponse().setBody("[{}]"));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     assertThat(api.iterator()).isEmpty();
@@ -60,7 +60,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void iterateByNameWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"records\": [] }"));
+    server.enqueue(new MockResponse().setBody("[{}]"));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     assertThat(api.iterateByName("www.denominator.io.")).isEmpty();
@@ -83,7 +83,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void getByNameAndTypeWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"records\": [] }"));
+    server.enqueue(new MockResponse().setBody("[{}]"));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
 
@@ -94,7 +94,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void putFirstRecord() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"records\": [] }"));
+    server.enqueue(new MockResponse().setBody("[{}]"));
     server.enqueue(new MockResponse().setBody(recordResponse));
     server.enqueue(new MockResponse().setBody(recordResponse));
 
@@ -107,7 +107,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
   
   @Test
   public void putFirstMultiRecord() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"records\": [] }"));
+    server.enqueue(new MockResponse().setBody("[{}]"));
     server.enqueue(new MockResponse().setBody(recordResponse));
     server.enqueue(new MockResponse().setBody(recordResponse));
 
@@ -134,7 +134,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
   @Test
   public void putSameRecordWithDifferentRdata() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
-    server.enqueue(new MockResponse());
+    server.enqueue(new MockResponse().setBody("[{}]"));
     server.enqueue(new MockResponse().setBody(recordsResponse));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
@@ -151,7 +151,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
   @Test
   public void putSameRecordWithDifferentTtl() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
-    server.enqueue(new MockResponse());
+    server.enqueue(new MockResponse().setBody("[{}]"));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
@@ -168,9 +168,11 @@ public class VerisignBindResourceRecordSetApiMockTest {
   public void putOneRecordReplacesRRSet() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse2));
     server.enqueue(new MockResponse().setBody(recordsResponse2));
-    server.enqueue(new MockResponse());
+    server.enqueue(new MockResponse().setBody("[{}]"));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
+    System.out.println(recordsResponse2);
+    
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
     assertThat(api.iterator()).hasSize(2);
 
@@ -195,11 +197,11 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void deleteByNameAndTypeWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody(recordResponse));
+    server.enqueue(new MockResponse().setBody(recordsResponse));
     server.enqueue(new MockResponse());
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
-    api.deleteByNameAndType("www", "A");
+    api.deleteByNameAndType("www.denominator.io.", "A");
 
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
@@ -220,16 +222,13 @@ public class VerisignBindResourceRecordSetApiMockTest {
       + "   \"rdata\": \"127.0.0.2\"\n" 
       + "}";
 
-  static String recordsResponse = "{\n" 
-      + "  \"records\": [\n" 
+  static String recordsResponse = "[\n" 
       + recordResponse 
-      + "  ]\n" 
-      + "}";
+      + "  ]\n" ;
 
-  static String recordsResponse2 = "{\n" 
-      + "  \"records\": [\n" 
+  static String recordsResponse2 = "[\n" 
       + recordResponse 
       + ",\n"
-      + recordResponse2 + " ]\n" 
-      + "}";
+      + recordResponse2 + " ]\n";
+ 
 }

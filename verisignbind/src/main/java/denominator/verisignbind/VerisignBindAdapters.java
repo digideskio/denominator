@@ -53,6 +53,10 @@ final class VerisignBindAdapters {
           reader.skipValue();
         }
       }
+
+      if (name == null) {
+        return null;
+      }
       return Zone.create(id, name, ttl, email);
     }
   }
@@ -82,6 +86,10 @@ final class VerisignBindAdapters {
           reader.skipValue();
         }
       }
+
+      if (record.name == null) {
+        return null;
+      }
       return record;
     }
   }
@@ -89,21 +97,27 @@ final class VerisignBindAdapters {
   @SuppressWarnings("hiding")
   static abstract class ListAdapter<X> extends TypeAdapter<List<X>> {
     protected abstract String jsonKey();
+
     protected abstract X build(JsonReader reader) throws IOException;
 
     @Override
     public List<X> read(JsonReader reader) throws IOException {
       List<X> elements = new LinkedList<X>();
       reader.beginArray();
-      reader.beginObject();
-      elements.add(build(reader));
-      reader.endObject();
-      reader.endArray();         
-      
+      while (reader.hasNext()) {
+        reader.beginObject();
+        X x = build(reader);
+        if (x != null) {
+          elements.add(x);
+        }
+        reader.endObject();
+      }
+      reader.endArray();
+
       Collections.sort(elements, toStringComparator());
       return elements;
     }
-    
+
     @Override
     public void write(JsonWriter out, List<X> value) throws IOException {
       throw new UnsupportedOperationException();

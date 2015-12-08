@@ -12,6 +12,9 @@ import feign.FeignException;
 
 final class VerisignBindZoneApi implements denominator.ZoneApi {
 
+  static final String ZONE_NOT_FOUND = "404";
+  static final String ZONE_ALREADY_EXISTS = "409";
+  
   private final VerisignBind api;
 
   @Inject
@@ -33,8 +36,8 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
   public String put(Zone zone) {
     try {
       zone = api.createZone(zone.name(), zone.ttl(), zone.email());
-    } catch (FeignException e) {
-      if (e.getMessage().indexOf(VerisignBindException.ZONE_ALREADY_EXISTS) == -1) {
+    } catch (FeignException e) {      
+      if (e.getMessage().indexOf(ZONE_ALREADY_EXISTS) == -1) {
         throw e;
       }
     }
@@ -48,7 +51,7 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
     try {
       api.deleteZone(name);
     } catch (FeignException e) {
-      if (e.getMessage().indexOf(VerisignBindException.ZONE_NOT_FOUND) == -1) {
+      if (e.getMessage().indexOf(ZONE_NOT_FOUND) == -1) {
         throw e;
       }
     }

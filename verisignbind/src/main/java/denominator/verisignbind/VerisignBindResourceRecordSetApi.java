@@ -67,7 +67,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
             api.updateResourceRecord(zoneName, record.getName(), record.getTtl(), record.getRdata());
           }
         } else {
-          api.deleteResourceRecord(zoneName, record.getName());
+          api.deleteResourceRecord(zoneName, record.getName(), record.getType());
         }
       }
     }
@@ -96,7 +96,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
     checkNotNull(type, "type");
     for (ResourceRecord record : api.getResourceRecords(zoneName)) {
       if (name.equals(record.getName()) && type.equals(record.getType())) {
-        api.deleteResourceRecord(zoneName, name);
+        api.deleteResourceRecord(zoneName, name, record.getType());
       }
     }
   }

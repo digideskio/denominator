@@ -14,8 +14,7 @@ interface VerisignBind {
 
   @RequestLine("POST /zones")
   @Body("%7B\"name\":\"{name}\",\"ttl\":{ttl},\"email\":\"{email}\"%7D")
-  Zone createZone(@Param("name") String name, @Param("ttl") int ttl,
-      @Param("email") String email);
+  Zone createZone(@Param("name") String name, @Param("ttl") int ttl, @Param("email") String email);
 
   @RequestLine("PUT /zones/{id}")
   @Body("%7B\"id\":\"{id}\",\"name\":\"{name}\",\"ttl\":{ttl},\"email\":\"{email}\"%7D")
@@ -48,6 +47,7 @@ interface VerisignBind {
   ResourceRecord getResourceRecord(@Param("zone_id") String zoneId, @Param("name") String name,
       @Param("type") String type);
 
-  @RequestLine("DELETE /zones/{zone_id}/records/{name}")
-  void deleteResourceRecord(@Param("zone_id") String zoneId, @Param("name") String name);
+  @RequestLine("DELETE /zones/{zone_id}/records/?name={name}&type={type}")
+  void deleteResourceRecord(@Param("zone_id") String zoneId, @Param("name") String name,
+      @Param("type") String type);
 }

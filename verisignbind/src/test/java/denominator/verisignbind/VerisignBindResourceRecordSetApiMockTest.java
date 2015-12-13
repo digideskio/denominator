@@ -143,7 +143,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     assertThat(api.iterator()).hasSize(1);
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
-    server.assertRequest().hasMethod("DELETE").hasPath(format("/zones/%s/records/?name=%s&type=%s", zoneName, "www.denominator.io.", "A"));
+    server.assertRequest().hasMethod("DELETE").hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
     server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
@@ -180,7 +180,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
-    server.assertRequest().hasMethod("DELETE").hasPath(format("/zones/%s/records/?name=%s&type=%s", zoneName, "www.denominator.io.", "A"));
+    server.assertRequest().hasMethod("DELETE").hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
 
   }
 

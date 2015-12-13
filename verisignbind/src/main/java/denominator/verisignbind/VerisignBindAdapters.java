@@ -154,7 +154,7 @@ final class VerisignBindAdapters {
     public void setType(String type) {
       this.type = type;
     }
-
+    
     public String getRdata() {
       return rdata;
     }

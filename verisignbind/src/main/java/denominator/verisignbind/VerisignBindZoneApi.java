@@ -1,7 +1,6 @@
 package denominator.verisignbind;
 
-import static denominator.common.Util.filter;
-import static denominator.model.Zones.nameEqualTo;
+import static denominator.common.Util.singletonIterator;
 
 import java.util.Iterator;
 
@@ -29,7 +28,7 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
 
   @Override
   public Iterator<Zone> iterateByName(String name) {
-    return filter(iterator(), nameEqualTo(name));
+    return singletonIterator(api.getZone(name));
   }
 
   @Override

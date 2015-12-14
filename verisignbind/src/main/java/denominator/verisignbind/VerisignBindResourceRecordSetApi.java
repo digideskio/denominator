@@ -5,7 +5,6 @@ import static denominator.common.Preconditions.checkNotNull;
 import static denominator.common.Util.join;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,17 +45,24 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
 
   @Override
   public ResourceRecordSet<?> getByNameAndType(String name, String type) {
-    // ResourceRecord record = api.getResourceRecord(zoneName, name, type);
-    // Builder<Map<String, Object>> builder =
-    // ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
-    // builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
-    // return builder.build();
     List<ResourceRecord> records = api.getResourceRecord(zoneName, name, type);
-    if (records != null && !records.isEmpty()) {
+
+//    if (records != null && !records.isEmpty()) {
+//      ResourceRecord record = records.get(0);
+//      Builder<Map<String, Object>> builder =
+//          ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
+//      builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
+//      return builder.build();
+//    }
+    
+    if (records != null) {
       ResourceRecord record = records.get(0);
       Builder<Map<String, Object>> builder =
           ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
-      builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
+      
+      for (ResourceRecord resourceRecord : records) {
+        builder.add(getRRTypeAndRdata(record.getType(), resourceRecord.getRdata()));
+      }            
       return builder.build();
     }
 

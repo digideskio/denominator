@@ -6,6 +6,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -38,7 +39,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void iteratorWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     assertThat(api.iterator()).isEmpty();
@@ -59,7 +60,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void iterateByNameWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     assertThat(api.iterateByName("www.denominator.io.")).isEmpty();
@@ -78,10 +79,24 @@ public class VerisignBindResourceRecordSetApiMockTest {
     assertThat(api.getByNameAndType("www.denominator.io.", "A")).hasName("www.denominator.io.")
         .hasType("A").hasTtl(86400).containsExactlyRecords(AData.create("127.0.0.1"));
 
-    // server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("GET")
         .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
   }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void getByNameAndTypeWhenPresentMultiple() throws Exception {
+    server.enqueue(new MockResponse().setBody(recordsResponseMultiple));
+
+    ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
+    assertThat(api.getByNameAndType("www.denominator.io.", "A")).hasName("www.denominator.io.")
+        .hasType("A").hasTtl(86400)
+        .containsExactlyRecords(AData.create("127.0.0.1"), AData.create("127.0.0.10"));
+
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
+  }
+
 
   @Test
   public void getByNameAndTypeWhenAbsent() throws Exception {
@@ -225,6 +240,12 @@ public class VerisignBindResourceRecordSetApiMockTest {
       + "   \"ttl\": 86400,\n" 
       + "   \"rdata\": \"127.0.0.2\"\n" 
       + "}";
+  
+  static String recordResponse3 = "{\n" 
+      + "   \"name\": \"www.denominator.io.\",\n"
+      + "   \"type\": \"A\",\n" 
+      + "   \"ttl\": 86400,\n" 
+      + "   \"rdata\": \"127.0.0.10\"\n" + "}";  
 
   static String recordsResponse = "[\n" 
       + recordResponse 
@@ -235,6 +256,12 @@ public class VerisignBindResourceRecordSetApiMockTest {
       + ",\n" 
       + recordResponse2 
       + " ]\n";
+  
+  static String recordsResponseMultiple = "[\n" 
+      + recordResponse 
+      + ",\n" 
+      + recordResponse3 
+      + " ]\n";  
   
   /* @formatter:on */
 

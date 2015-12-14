@@ -2,18 +2,18 @@ package denominator.verisignbind;
 
 import static denominator.CredentialsConfiguration.credentials;
 import static denominator.model.ResourceRecordSets.a;
-import static java.util.Arrays.asList;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import static java.util.Arrays.asList;
 
 import denominator.DNSApiManager;
 import denominator.Denominator;
 import denominator.ZoneApi;
 import denominator.model.ResourceRecordSet;
-import denominator.model.Zone;
 import denominator.model.ResourceRecordSet.Builder;
+import denominator.model.Zone;
 
 public class Y {
 
@@ -55,8 +55,8 @@ public class Y {
 
     // Add A resourceRecord
     System.out.println("\nAdding A resource record...");
-//    recordSetsInZoneApi.put(a("www." + zoneName, 86400, asList("192.0.2.1", "198.51.100.1")));
-    recordSetsInZoneApi.put(a("www." + zoneName, 86400, "127.0.0.1"));
+    recordSetsInZoneApi.put(a("www." + zoneName, 86400, asList("127.0.0.1", "198.51.100.1")));
+//    recordSetsInZoneApi.put(a("www." + zoneName, 86400, "127.0.0.1"));
 
     // Query resourceRecords
 //    System.out.println("\nQuerying resourceRecords...");
@@ -69,16 +69,15 @@ public class Y {
 
     // Query resourceRecords by name
     System.out.println("\nQuerying resourceRecord by name...");
-//    Iterator<ResourceRecordSet<?>>  rrsIterator = recordSetsInZoneApi.iterateByName("www." + zoneName);
-//    while (rrsIterator.hasNext()) {
-//      ResourceRecordSet<?> rrs = rrsIterator.next();
-//      System.out.printf("\t%s", rrs.toString());
-//      System.out.println();
-//    }
-
     ResourceRecordSet<?>  rr = recordSetsInZoneApi.getByNameAndType("www." + zoneName, "A");
     System.out.println(rr);
+    
+    System.out.println("\nUpdating A resource record...");
+    recordSetsInZoneApi.put(a("www." + zoneName, 1234, asList("127.0.0.1", "198.51.100.1")));
 
+    System.out.println("\nQuerying resourceRecord by name...");
+    rr = recordSetsInZoneApi.getByNameAndType("www." + zoneName, "A");
+    System.out.println(rr);
     
     // Delete A resourceRecord
     System.out.println("\nDeleting A resource record...");

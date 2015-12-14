@@ -46,7 +46,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
   @Override
   public ResourceRecordSet<?> getByNameAndType(String name, String type) {
     List<ResourceRecord> records = api.getResourceRecord(zoneName, name, type);
-    if (records != null) {
+    if (records != null && !records.isEmpty()) {
       ResourceRecord record = records.get(0);
       Builder<Map<String, Object>> builder =
           ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
@@ -77,7 +77,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
               continue;
             }
             record.setTtl(rrset.ttl());
-            api.updateResourceRecord(zoneName, record.getName(), record.getTtl(), record.getRdata());
+            api.updateResourceRecord(zoneName, record.getName(), record.getType(), record.getTtl(), record.getRdata());
           }
         } else {
           api.deleteResourceRecord(zoneName, record.getName(), record.getType());

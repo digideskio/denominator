@@ -27,7 +27,7 @@ public class VerisignBindZoneApiMockTest {
 
   @Test
   public void iteratorWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
     ZoneApi api = server.connect().api().zones();
     assertThat(api.iterator()).isEmpty();
 
@@ -36,29 +36,27 @@ public class VerisignBindZoneApiMockTest {
 
   @Test
   public void iterateByNameWhenPresent() throws Exception {
-    server.enqueue(new MockResponse().setBody(zonesResponse));
+    server.enqueue(new MockResponse().setBody(zoneResponse));
     ZoneApi api = server.connect().api().zones();
     assertThat(api.iterateByName("denominator.io")).containsExactly(
         Zone.create("denominator.io", "denominator.io", 86400, "nil@denominator.io"));
 
-    server.assertRequest().hasMethod("GET").hasPath("/zones");
+    server.assertRequest().hasMethod("GET").hasPath("/zones/denominator.io");
   }
 
   @Test
   public void iterateByNameWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse());
     ZoneApi api = server.connect().api().zones();
     assertThat(api.iterateByName("denominator.io")).isEmpty();
 
-    server.assertRequest().hasMethod("GET").hasPath("/zones");
+    server.assertRequest().hasMethod("GET").hasPath("/zones/denominator.io");
   }
 
   @Test
   public void putWhenPresent() throws Exception {
-    server.enqueue(new MockResponse().setResponseCode(409).setBody(
-        "{\"code\": 409, \"reason\": \"duplicate zone\"}"));
     server.enqueue(new MockResponse().setBody(zoneResponse));
-    server.enqueue(new MockResponse().setBody(zonesResponse));
+    server.enqueue(new MockResponse().setBody(zoneResponse));
 
     ZoneApi api = server.connect().api().zones();
 
@@ -68,8 +66,12 @@ public class VerisignBindZoneApiMockTest {
     server.assertRequest().hasMethod("POST").hasPath("/zones")
         .hasBody("{\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
 
-    server.assertRequest().hasMethod("PUT").hasPath("/zones/denominator.io")
-        .hasBody("{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
+    server
+        .assertRequest()
+        .hasMethod("PUT")
+        .hasPath("/zones/denominator.io")
+        .hasBody(
+            "{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
   }
 
   @Test
@@ -83,6 +85,14 @@ public class VerisignBindZoneApiMockTest {
 
     server.assertRequest().hasMethod("POST").hasPath("/zones")
         .hasBody("{\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
+
+    server
+        .assertRequest()
+        .hasMethod("PUT")
+        .hasPath("/zones/denominator.io")
+        .hasBody(
+            "{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
+
   }
 
   @Test
@@ -106,12 +116,19 @@ public class VerisignBindZoneApiMockTest {
     server.assertRequest().hasMethod("DELETE").hasPath("/zones/" + zoneName);
   }
 
+  /* @formatter:off */
+  
   static String zoneName = "denominator.io.";
 
-  static String zoneResponse = "{\n" + "  \"id\": \"denominator.io\",\n"
-      + "  \"name\": \"denominator.io\",\n" + "  \"ttl\": 86400,\n"
-      + "  \"email\": \"nil@denominator.io\"\n" + "}\n";
+  static String zoneResponse = "{\n" 
+      + "  \"id\": \"denominator.io\",\n"
+      + "  \"name\": \"denominator.io\",\n" 
+      + "  \"ttl\": 86400,\n"
+      + "  \"email\": \"nil@denominator.io\"\n" 
+      + "}\n";
 
   static String zonesResponse = "[\n" + zoneResponse + "]\n";
+  
+  /* @formatter:on */
 
 }

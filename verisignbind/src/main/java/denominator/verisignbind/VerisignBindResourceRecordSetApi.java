@@ -36,18 +36,12 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
 
   @Override
   public Iterator<ResourceRecordSet<?>> iterateByName(String name) {
-    // return filter(iterator(), nameEqualTo(name));
-    // ResourceRecord record = api.getResourceRecord(zoneName, name, null);
-    // List<ResourceRecord> records = new ArrayList<VerisignBindAdapters.ResourceRecord>();
-    // records.add(record);
-    // return new GroupByRecordNameAndTypeIterator(records.iterator());
+    List<ResourceRecord> records = api.getResourceRecord(zoneName, name, null);
+    if (records == null) {
+      records = new ArrayList<VerisignBindAdapters.ResourceRecord>();
+    }
 
-    return null;
-
-    // Builder<Map<String, Object>> builder =
-    // ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
-    // builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
-    // builder.build();
+    return new GroupByRecordNameAndTypeIterator(records.iterator());
   }
 
   @Override
@@ -58,11 +52,15 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
     // builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
     // return builder.build();
     List<ResourceRecord> records = api.getResourceRecord(zoneName, name, type);
-    ResourceRecord record = records.get(0);
-    Builder<Map<String, Object>> builder =
-        ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
-    builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
-    return builder.build();
+    if (records != null && !records.isEmpty()) {
+      ResourceRecord record = records.get(0);
+      Builder<Map<String, Object>> builder =
+          ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
+      builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
+      return builder.build();
+    }
+
+    return null;
   }
 
   @Override
@@ -101,40 +99,12 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
       record.setTtl(86400);
     }
 
-    // List<String> list = new ArrayList<String>();
     for (Map<String, Object> rdata : recordsToCreate) {
       LinkedHashMap<String, Object> mutable = new LinkedHashMap<String, Object>(rdata);
       record.setRdata(join(' ', mutable.values().toArray()));
-      // list.add(join(' ', mutable.values().toArray()));
-
       api.createResourceRecord(zoneName, record.getName(), record.getType(), record.getTtl(),
           record.getRdata());
-
     }
-
-
-    // System.out.println(buildRdata(list));
-    // api.createResourceRecord(zoneName, record.getName(), record.getType(), record.getTtl(),
-    // buildRdata(list));
-  }
-
-  private String buildRdata(List<String> list) {
-    StringBuilder builder = new StringBuilder();
-    builder.append("[");
-    for (String rdata : list) {
-      builder.append("\"");
-      builder.append(rdata);
-      builder.append("\",");
-    }
-
-    builder.append("]");
-    String rdata = builder.toString();
-    int index = rdata.lastIndexOf(",");
-    if (index == -1) {
-      return rdata;
-    }
-
-    return new StringBuilder(rdata).replace(index, index + 1, "").toString();
   }
 
   @Override

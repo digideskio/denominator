@@ -30,7 +30,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
 
   @Override
   public Iterator<ResourceRecordSet<?>> iterator() {
-    return new GroupByRecordNameAndTypeIterator(api.getResourceRecords(zoneName).iterator());
+    return new RecordIterator(api.getResourceRecords(zoneName).iterator());
   }
 
   @Override
@@ -40,21 +40,12 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
       records = new ArrayList<VerisignBindAdapters.ResourceRecord>();
     }
 
-    return new GroupByRecordNameAndTypeIterator(records.iterator());
+    return new RecordIterator(records.iterator());
   }
 
   @Override
   public ResourceRecordSet<?> getByNameAndType(String name, String type) {
     List<ResourceRecord> records = api.getResourceRecord(zoneName, name, type);
-
-//    if (records != null && !records.isEmpty()) {
-//      ResourceRecord record = records.get(0);
-//      Builder<Map<String, Object>> builder =
-//          ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
-//      builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
-//      return builder.build();
-//    }
-    
     if (records != null) {
       ResourceRecord record = records.get(0);
       Builder<Map<String, Object>> builder =

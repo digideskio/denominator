@@ -72,9 +72,7 @@ final class VerisignBindAdapters {
       ResourceRecord record = new ResourceRecord();
       while (reader.hasNext()) {
         String key = reader.nextName();
-        if (key.equals("id")) {
-          record.id = reader.nextString();
-        } else if (key.equals("name")) {
+        if (key.equals("name")) {
           record.name = reader.nextString();
         } else if (key.equals("type")) {
           record.type = reader.nextString();
@@ -125,19 +123,10 @@ final class VerisignBindAdapters {
   }
 
   static class ResourceRecord {
-    private String id;
     private String name;
     private String type;
     private String rdata;
     private Integer ttl;
-
-    public String getId() {
-      return id;
-    }
-
-    public void setId(String id) {
-      this.id = id;
-    }
 
     public String getName() {
       return name;
@@ -154,7 +143,7 @@ final class VerisignBindAdapters {
     public void setType(String type) {
       this.type = type;
     }
-    
+
     public String getRdata() {
       return rdata;
     }
@@ -173,8 +162,7 @@ final class VerisignBindAdapters {
 
     @Override
     public String toString() {
-      return String.format("rr[id=%s name=%s type=%s rdata=\"%s\" ttl=%d]", id, name, type, rdata,
-          ttl);
+      return String.format("rr[name=%s type=%s rdata=\"%s\" ttl=%d]", name, type, rdata, ttl);
     }
   }
 }

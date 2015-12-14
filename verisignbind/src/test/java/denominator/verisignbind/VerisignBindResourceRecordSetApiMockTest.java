@@ -6,7 +6,7 @@ import static java.lang.String.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Iterator;
 
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -17,6 +17,7 @@ import com.squareup.okhttp.mockwebserver.MockResponse;
 import denominator.ResourceRecordSetApi;
 import denominator.common.Util;
 import denominator.model.ResourceRecordSet;
+import denominator.model.rdata.AAAAData;
 import denominator.model.rdata.AData;
 
 public class VerisignBindResourceRecordSetApiMockTest {
@@ -52,8 +53,30 @@ public class VerisignBindResourceRecordSetApiMockTest {
   public void iterateByNameWhenPresent() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
+
     assertThat(api.iterateByName("www.denominator.io.").next()).hasName("www.denominator.io.")
         .hasType("A").hasTtl(86400).containsExactlyRecords(AData.create("127.0.0.1"));
+
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s", zoneName, "www.denominator.io."));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void iterateByNameWhenPresentMultiple() throws Exception {
+    server.enqueue(new MockResponse().setBody(recordsResponseMixed));
+    ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
+
+    Iterator<ResourceRecordSet<?>> rrsets = api.iterateByName("www.denominator.io.");
+    assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("A").hasTtl(86400)
+        .containsExactlyRecords(AData.create("127.0.0.1"));
+
+    assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("A").hasTtl(86400)
+        .containsExactlyRecords(AData.create("127.0.0.10"));
+
+    assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("AAAA").hasTtl(86400)
+        .containsExactlyRecords(AAAAData.create("2001:db8::3"));
+
     server.assertRequest().hasMethod("GET")
         .hasPath(format("/zones/%s/records/%s", zoneName, "www.denominator.io."));
   }
@@ -102,7 +125,9 @@ public class VerisignBindResourceRecordSetApiMockTest {
   public void getByNameAndTypeWhenAbsent() throws Exception {
     server.enqueue(new MockResponse());
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
+
     assertThat(api.getByNameAndType("www.denominator.io.", "A")).isNull();
+
     server.assertRequest().hasMethod("GET")
         .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
   }
@@ -174,6 +199,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
     api.put(a("www.denominator.io.", 1000, "127.0.0.1"));
 
     assertThat(api.iterator()).hasSize(1);
+
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("PUT")
         .hasPath(format("/zones/%s/records/%s", zoneName, "www.denominator.io."));
@@ -240,12 +266,6 @@ public class VerisignBindResourceRecordSetApiMockTest {
       + "   \"ttl\": 86400,\n" 
       + "   \"rdata\": \"127.0.0.2\"\n" 
       + "}";
-  
-  static String recordResponse3 = "{\n" 
-      + "   \"name\": \"www.denominator.io.\",\n"
-      + "   \"type\": \"A\",\n" 
-      + "   \"ttl\": 86400,\n" 
-      + "   \"rdata\": \"127.0.0.10\"\n" + "}";  
 
   static String recordsResponse = "[\n" 
       + recordResponse 
@@ -258,10 +278,38 @@ public class VerisignBindResourceRecordSetApiMockTest {
       + " ]\n";
   
   static String recordsResponseMultiple = "[\n" 
-      + recordResponse 
+      + "{\n" 
+      + "   \"name\": \"www.denominator.io.\",\n"
+      + "   \"type\": \"A\",\n" 
+      + "   \"ttl\": 86400,\n" 
+      + "   \"rdata\": \"127.0.0.1\"\n" + "}" 
       + ",\n" 
-      + recordResponse3 
+      + "{\n" 
+      + "   \"name\": \"www.denominator.io.\",\n"
+      + "   \"type\": \"A\",\n" 
+      + "   \"ttl\": 86400,\n" 
+      + "   \"rdata\": \"127.0.0.10\"\n" + "}" 
       + " ]\n";  
+  
+  static String recordsResponseMixed = "[\n" 
+      + "{\n" 
+      + "   \"name\": \"www.denominator.io.\",\n"
+      + "   \"type\": \"A\",\n" 
+      + "   \"ttl\": 86400,\n" 
+      + "   \"rdata\": \"127.0.0.1\"\n" + "}" 
+      + ",\n" 
+      + "{\n" 
+      + "   \"name\": \"www.denominator.io.\",\n"
+      + "   \"type\": \"A\",\n" 
+      + "   \"ttl\": 86400,\n" 
+      + "   \"rdata\": \"127.0.0.10\"\n" + "}" 
+      + ",\n"      
+      + "{\n" 
+      + "   \"name\": \"www.denominator.io.\",\n"
+      + "   \"type\": \"AAAA\",\n" 
+      + "   \"ttl\": 86400,\n" 
+      + "   \"rdata\": \"2001:db8::3\"\n" + "}" 
+      + " ]\n"; 
   
   /* @formatter:on */
 

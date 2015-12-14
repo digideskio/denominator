@@ -56,7 +56,7 @@ public class Y {
     // Add A resourceRecord
     System.out.println("\nAdding A resource record...");
 //    recordSetsInZoneApi.put(a("www." + zoneName, 86400, asList("192.0.2.1", "198.51.100.1")));
-    recordSetsInZoneApi.put(a("www." + zoneName, 86400, "198.51.100.1"));
+    recordSetsInZoneApi.put(a("www." + zoneName, 86400, "127.0.0.1"));
 
     // Query resourceRecords
 //    System.out.println("\nQuerying resourceRecords...");

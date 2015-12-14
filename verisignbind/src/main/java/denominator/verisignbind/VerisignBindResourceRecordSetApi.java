@@ -50,10 +50,10 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
       ResourceRecord record = records.get(0);
       Builder<Map<String, Object>> builder =
           ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
-      
+
       for (ResourceRecord resourceRecord : records) {
         builder.add(getRRTypeAndRdata(record.getType(), resourceRecord.getRdata()));
-      }            
+      }
       return builder.build();
     }
 
@@ -67,24 +67,23 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
 
     List<Map<String, Object>> recordsToCreate = new ArrayList<Map<String, Object>>(rrset.records());
 
-    // for (ResourceRecord record : api.getResourceRecords(zoneName)) {
-    // if (rrset.name().equals(record.getName()) && rrset.type().equals(record.getType())) {
-    // Map<String, Object> rdata = getRRTypeAndRdata(record.getType(), record.getRdata());
-    // if (recordsLeftToCreate.contains(rdata)) {
-    // recordsLeftToCreate.remove(rdata);
-    // if (rrset.ttl() != null) {
-    // if (rrset.ttl().equals(record.getTtl())) {
-    // continue;
-    // }
-    // record.setTtl(rrset.ttl());
-    // api.updateResourceRecord(zoneName, record.getName(), record.getTtl(),
-    // Arrays.asList(record.getRdata()));
-    // }
-    // } else {
-    // api.deleteResourceRecord(zoneName, record.getName(), record.getType());
-    // }
-    // }
-    // }
+    for (ResourceRecord record : api.getResourceRecord(zoneName, rrset.name(), rrset.type())) {
+      if (rrset.name().equals(record.getName()) && rrset.type().equals(record.getType())) {
+        Map<String, Object> rdata = getRRTypeAndRdata(record.getType(), record.getRdata());
+        if (recordsToCreate.contains(rdata)) {
+          recordsToCreate.remove(rdata);
+          if (rrset.ttl() != null) {
+            if (rrset.ttl().equals(record.getTtl())) {
+              continue;
+            }
+            record.setTtl(rrset.ttl());
+            api.updateResourceRecord(zoneName, record.getName(), record.getTtl(), record.getRdata());
+          }
+        } else {
+          api.deleteResourceRecord(zoneName, record.getName(), record.getType());
+        }
+      }
+    }
 
     ResourceRecord record = new ResourceRecord();
     record.setName(rrset.name());

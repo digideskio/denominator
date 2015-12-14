@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -132,34 +131,36 @@ public class VerisignBindResourceRecordSetApiMockTest {
         .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
   }
 
-  @Ignore
+  @Test
   public void putFirstRecord() throws Exception {
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
     server.enqueue(new MockResponse().setBody(recordResponse));
     server.enqueue(new MockResponse().setBody(recordResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
     api.put(a("www.denominator.io.", 86400, "127.0.0.1"));
 
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
     server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
   }
 
-  @Ignore
+  @Test
   public void putFirstMultiRecord() throws Exception {
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
     server.enqueue(new MockResponse().setBody(recordResponse));
     server.enqueue(new MockResponse().setBody(recordResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
     api.put(a("www.denominator.io.", 86400, Arrays.asList("127.0.0.1", "127.0.0.2")));
 
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
     server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
   }
 
-  @Ignore
+  @Test
   public void putSameRecord() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
     server.enqueue(new MockResponse().setBody(recordsResponse));
@@ -168,13 +169,15 @@ public class VerisignBindResourceRecordSetApiMockTest {
     api.put(a("www.denominator.io.", 86400, "127.0.0.1"));
 
     assertThat(api.iterator()).hasSize(1);
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
   }
 
-  @Ignore
+  @Test
   public void putSameRecordWithDifferentRdata() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
     server.enqueue(new MockResponse().setBody(recordsResponse));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
@@ -182,17 +185,19 @@ public class VerisignBindResourceRecordSetApiMockTest {
     api.put(a("www.denominator.io.", 86400, "127.0.0.2"));
 
     assertThat(api.iterator()).hasSize(1);
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
     server.assertRequest().hasMethod("DELETE")
         .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
     server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
 
-  @Ignore
+  @Test
   public void putSameRecordWithDifferentTtl() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
@@ -200,21 +205,20 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     assertThat(api.iterator()).hasSize(1);
 
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
     server.assertRequest().hasMethod("PUT")
         .hasPath(format("/zones/%s/records/%s", zoneName, "www.denominator.io."));
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
 
 
-  @Ignore
+  @Test
   public void putOneRecordReplacesRRSet() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse2));
     server.enqueue(new MockResponse().setBody(recordsResponse2));
-    server.enqueue(new MockResponse().setBody("[{}]"));
+    server.enqueue(new MockResponse().setBody("[]"));
     server.enqueue(new MockResponse().setBody(recordsResponse));
-
-    System.out.println(recordsResponse2);
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
     assertThat(api.iterator()).hasSize(2);
@@ -222,9 +226,11 @@ public class VerisignBindResourceRecordSetApiMockTest {
     api.put(a("www.denominator.io.", 1000, "127.0.0.10"));
 
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+    server.assertRequest().hasMethod("GET")
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
     server.assertRequest().hasMethod("DELETE")
         .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
+    server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
 
   }
 

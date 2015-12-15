@@ -13,7 +13,7 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
 
   static final String ZONE_NOT_FOUND = "404";
   static final String ZONE_ALREADY_EXISTS = "409";
-  
+
   private final VerisignBind api;
 
   @Inject
@@ -33,15 +33,16 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
 
   @Override
   public String put(Zone zone) {
-    try {
-      zone = api.createZone(zone.name(), zone.ttl(), zone.email());
-    } catch (FeignException e) {      
-      if (e.getMessage().indexOf(ZONE_ALREADY_EXISTS) == -1) {
-        throw e;
-      }
-    }
 
-    api.updateZone(zone.id(), zone.name(), zone.ttl(), zone.email());
+      try {
+        zone = api.createZone(zone.name(), zone.ttl(), zone.email());
+      } catch (FeignException e) {
+        if (e.getMessage().indexOf(ZONE_ALREADY_EXISTS) == -1) {
+          throw e;
+        }
+      }
+    
+    api.updateZone(zone.name(), zone.name(), zone.ttl(), zone.email());
     return zone.name();
   }
 

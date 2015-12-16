@@ -35,16 +35,16 @@ public class Y {
     System.out.println("\t" + zoneId);
 
     // Query zones
-//    System.out.println("\nQuerying zones...");
-//    Iterator<Zone> zoneIterator = zoneApi.iterator();
-//    while (zoneIterator.hasNext()) {
-//      System.out.printf("\t%s", zoneIterator.next());
-//      System.out.println();
-//    }
+    System.out.println("\nQuerying zones...");
+    Iterator<Zone> zoneIterator = zoneApi.iterator();
+    while (zoneIterator.hasNext()) {
+      System.out.printf("\t%s", zoneIterator.next());
+      System.out.println();
+    }
 
     // Query zone by name
     System.out.println("\nQuerying zone by name...");
-    Iterator<Zone> zoneIterator = zoneApi.iterateByName(zoneName);
+    zoneIterator = zoneApi.iterateByName(zoneName);
     while (zoneIterator.hasNext()) {
       System.out.printf("\t%s", zoneIterator.next());
       System.out.println();
@@ -59,13 +59,13 @@ public class Y {
 //    recordSetsInZoneApi.put(a("www." + zoneName, 86400, "127.0.0.1"));
 
     // Query resourceRecords
-//    System.out.println("\nQuerying resourceRecords...");
-//    Iterator<ResourceRecordSet<?>> rrsIterator = recordSetsInZoneApi.iterator();
-//    while (rrsIterator.hasNext()) {
-//      ResourceRecordSet<?> rrs = rrsIterator.next();
-//      System.out.printf("\t%s", rrs.toString());
-//      System.out.println();
-//    }
+    System.out.println("\nQuerying resourceRecords...");
+    Iterator<ResourceRecordSet<?>> rrsIterator = recordSetsInZoneApi.iterator();
+    while (rrsIterator.hasNext()) {
+      ResourceRecordSet<?> rrs = rrsIterator.next();
+      System.out.printf("\t%s", rrs.toString());
+      System.out.println();
+    }
 
     // Query resourceRecords by name
     System.out.println("\nQuerying resourceRecord by name...");
@@ -109,7 +109,7 @@ public class Y {
         .build());
     
     // Add multiple SMIMEA records    
-    System.out.println("\nAdding multiple SMIMEA resource recorda...");
+    System.out.println("\nAdding multiple SMIMEA resource records...");
     
     Builder<Map<String, Object>> builder = ResourceRecordSet.builder().name("8812f49354927f48679bba15b670._smimecert." + zoneName).type("SMIMEA");
     

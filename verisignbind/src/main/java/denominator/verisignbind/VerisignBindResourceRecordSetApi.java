@@ -107,11 +107,8 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
   public void deleteByNameAndType(String name, String type) {
     checkNotNull(name, "name");
     checkNotNull(type, "type");
-    for (ResourceRecord record : api.getResourceRecords(zoneName)) {
-      if (name.equals(record.getName()) && type.equals(record.getType())) {
-        api.deleteResourceRecord(zoneName, name, record.getType());
-      }
-    }
+    
+    api.deleteResourceRecord(zoneName, name, type);
   }
 
   static final class Factory implements denominator.ResourceRecordSetApi.Factory {

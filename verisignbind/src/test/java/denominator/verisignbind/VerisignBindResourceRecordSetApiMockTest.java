@@ -68,10 +68,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     Iterator<ResourceRecordSet<?>> rrsets = api.iterateByName("www.denominator.io.");
     assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("A").hasTtl(86400)
-        .containsExactlyRecords(AData.create("127.0.0.1"));
-
-    assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("A").hasTtl(86400)
-        .containsExactlyRecords(AData.create("127.0.0.10"));
+        .containsExactlyRecords(AData.create("127.0.0.1"), AData.create("127.0.0.10"));
 
     assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("AAAA").hasTtl(86400)
         .containsExactlyRecords(AAAAData.create("2001:db8::3"));
@@ -242,7 +239,8 @@ public class VerisignBindResourceRecordSetApiMockTest {
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     api.deleteByNameAndType("www.denominator.io.", "A");
 
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+    server.assertRequest().hasMethod("DELETE")
+      .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));    
   }
 
   @Test
@@ -253,7 +251,8 @@ public class VerisignBindResourceRecordSetApiMockTest {
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     api.deleteByNameAndType("www.denominator.io.", "A");
 
-    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
+    server.assertRequest().hasMethod("DELETE")
+      .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
   }
 
   /* @formatter:off */

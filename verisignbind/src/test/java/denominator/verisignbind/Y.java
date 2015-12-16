@@ -2,6 +2,7 @@ package denominator.verisignbind;
 
 import static denominator.CredentialsConfiguration.credentials;
 import static denominator.model.ResourceRecordSets.a;
+import static denominator.model.ResourceRecordSets.aaaa;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -57,6 +58,10 @@ public class Y {
     System.out.println("\nAdding A resource record...");
     recordSetsInZoneApi.put(a("www." + zoneName, 86400, asList("127.0.0.1", "198.51.100.1")));
 //    recordSetsInZoneApi.put(a("www." + zoneName, 86400, "127.0.0.1"));
+    
+    // Add A resourceRecord
+    System.out.println("\nAdding AAAA resource record...");
+    recordSetsInZoneApi.put(aaaa("www." + zoneName, 86400, "2001:db8::3"));    
 
     // Query resourceRecords
     System.out.println("\nQuerying resourceRecords...");

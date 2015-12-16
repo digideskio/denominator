@@ -31,6 +31,21 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
         ResourceRecordSet.builder().name(record.getName()).type(record.getType())
             .ttl(record.getTtl());
     builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
+    
+    while (hasNext()) {
+      ResourceRecord next = peekingIterator.peek();
+      if (next == null) {
+        break;
+      }
+      
+      if (nameAndTypeEquals(next, record)) {
+        next = peekingIterator.next();
+        builder.add(getRRTypeAndRdata(record.getType(), next.getRdata()));
+      } else {
+        break;
+      }
+    }
+    
     return builder.build();
   }
 
@@ -38,4 +53,9 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
   public void remove() {
     throw new UnsupportedOperationException();
   }
+  
+  private static boolean nameAndTypeEquals(ResourceRecord actual, ResourceRecord expected) {
+    return actual.getName().equals(expected.getName())
+        && actual.getType().equals(expected.getType());
+  }  
 }

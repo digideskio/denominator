@@ -24,7 +24,7 @@ public class VerisignBindProviderDynamicUpdateMockTest {
   @Test
   public void dynamicEndpointUpdates() throws Exception {
     final AtomicReference<String> url = new AtomicReference<String>(server.url());
-    server.enqueue(new MockResponse().setBody("{ \"zones\": [] }"));
+    server.enqueue(new MockResponse().setBody("[]"));
 
     DNSApi api = Denominator.create(new VerisignBindProvider() {
       @Override
@@ -38,7 +38,7 @@ public class VerisignBindProviderDynamicUpdateMockTest {
 
     MockVerisignBindServer server2 = new MockVerisignBindServer();
     url.set(server2.url());
-    server2.enqueue(new MockResponse().setBody("{ \"zones\": [] }"));
+    server2.enqueue(new MockResponse().setBody("[]"));
 
     api.zones().iterator().hasNext();
     server2.assertRequest();
@@ -47,7 +47,7 @@ public class VerisignBindProviderDynamicUpdateMockTest {
 
   @Test
   public void dynamicCredentialUpdates() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"zones\": [] }"));
+    server.enqueue(new MockResponse().setBody("[]"));
 
     AtomicReference<Credentials> dynamicCredentials =
         new AtomicReference<Credentials>(server.credentials());
@@ -59,7 +59,7 @@ public class VerisignBindProviderDynamicUpdateMockTest {
 
     dynamicCredentials.set(ListCredentials.from("bob", "comeon"));
     server.credentials("bob", "comeon");
-    server.enqueue(new MockResponse().setBody("{ \"zones\": [] }"));
+    server.enqueue(new MockResponse().setBody("[]"));
 
     api.zones().iterator().hasNext();
     server.assertRequest();

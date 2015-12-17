@@ -17,7 +17,7 @@ public class HostedZonesReadableMockTest {
 
   @Test
   public void singleRequestOnSuccess() throws Exception {
-    server.enqueue(new MockResponse().setBody("{ \"zones\": [] }"));
+    server.enqueue(new MockResponse().setBody("[]"));
 
     DNSApiManager api = server.connect();
     assertTrue(api.checkConnection());

@@ -18,7 +18,7 @@ import denominator.model.Zone;
 
 public class Y {
 
-  public static void main(String[] args) {
+  public static void mainx(String[] args) {
     DNSApiManager manager =
         Denominator.create(new VerisignBindProvider("http://10.239.30.207:8080/api/v1/"),
             credentials("denomuser", "letmein1!"));

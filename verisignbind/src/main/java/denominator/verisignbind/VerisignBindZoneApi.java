@@ -28,7 +28,20 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
 
   @Override
   public Iterator<Zone> iterateByName(String name) {
-    return singletonIterator(api.getZone(name));
+    try {
+     Zone zone =  api.getZone(name);
+     String zoneName = strip(zone.name(), ".");
+     String email = strip(zone.email(), ".");
+     
+     Zone updatedZone = Zone.create(zone.id(), zoneName, zone.ttl(), email);     
+      return singletonIterator(updatedZone);
+    } catch (FeignException e) {
+      if (e.getMessage().indexOf(ZONE_NOT_FOUND) == -1) {
+        throw e;
+      }
+    }
+    
+    return singletonIterator(null);
   }
 
   @Override
@@ -56,4 +69,14 @@ final class VerisignBindZoneApi implements denominator.ZoneApi {
       }
     }
   }
+  
+  private String strip(String data, String replace) {
+    if(data != null) {
+      if(data.endsWith(replace)) {
+        data = data.substring(0, data.length()-1);
+      }
+    }
+    return data;
+  }
+  
 }

@@ -3,6 +3,8 @@ package denominator.verisignbind;
 import static denominator.common.Preconditions.checkArgument;
 import static denominator.common.Preconditions.checkNotNull;
 import static denominator.common.Util.join;
+import static denominator.common.Util.equal;
+import static denominator.verisignbind.VerisignBindResourceRecordSetApi.getRRTypeAndRdata;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,7 +54,27 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
           ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
 
       for (ResourceRecord resourceRecord : records) {
-        builder.add(getRRTypeAndRdata(record.getType(), resourceRecord.getRdata()));
+        if (record.getType().equalsIgnoreCase("TLSA")) {
+          String[] rdata = resourceRecord.getRdata().split(" ");
+          
+          Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();            
+          tlsaData.put("certUsage", rdata[0]);
+          tlsaData.put("selector", rdata[1]);
+          tlsaData.put("matchingType", rdata[2]);
+          tlsaData.put("certificateAssociationData", rdata[3]);
+          builder.add(tlsaData);
+        } else if (record.getType().equalsIgnoreCase("SMIMEA")) {
+          String[] rdata = resourceRecord.getRdata().split(" ");
+          
+          Map<String, Object> smimeaData = new LinkedHashMap<String, Object>();
+          smimeaData.put("certUsage", rdata[0]);
+          smimeaData.put("selector", rdata[1]);
+          smimeaData.put("matchingType", rdata[2]);
+          smimeaData.put("certificateAssociationData",rdata[3]);
+          builder.add(smimeaData);
+        } else {
+          builder.add(getRRTypeAndRdata(record.getType(), resourceRecord.getRdata()));
+        }        
       }
       return builder.build();
     }
@@ -64,25 +86,12 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
   public void put(ResourceRecordSet<?> rrset) {
     checkNotNull(rrset, "rrset was null");
     checkArgument(!rrset.records().isEmpty(), "rrset was empty %s", rrset);
-
+    
     List<Map<String, Object>> recordsToCreate = new ArrayList<Map<String, Object>>(rrset.records());
-
-    for (ResourceRecord record : api.getResourceRecord(zoneName, rrset.name(), rrset.type())) {
-      if (rrset.name().equals(record.getName()) && rrset.type().equals(record.getType())) {
-        Map<String, Object> rdata = getRRTypeAndRdata(record.getType(), record.getRdata());
-        if (recordsToCreate.contains(rdata)) {
-          recordsToCreate.remove(rdata);
-          if (rrset.ttl() != null) {
-            if (rrset.ttl().equals(record.getTtl())) {
-              continue;
-            }
-            record.setTtl(rrset.ttl());
-            api.updateResourceRecord(zoneName, record.getName(), record.getType(), record.getTtl(), record.getRdata());
-          }
-        } else {
-          api.deleteResourceRecord(zoneName, record.getName(), record.getType());
-        }
-      }
+    
+    ResourceRecordSet<?> oldRRSet = getByNameAndType(rrset.name(), rrset.type());
+    if(oldRRSet != null) {
+      api.deleteResourceRecord(zoneName, rrset.name(), rrset.type());
     }
 
     ResourceRecord record = new ResourceRecord();
@@ -127,6 +136,9 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
 
   public static Map<String, Object> getRRTypeAndRdata(String type, String rdata) {
     rdata = rdata.replace("\"", "");
+    if ("AAAA".equals(type)) {
+      rdata = rdata.toUpperCase();
+    }
     return Util.toMap(type, rdata);
   }
 }

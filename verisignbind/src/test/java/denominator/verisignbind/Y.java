@@ -64,13 +64,13 @@ public class Y {
     recordSetsInZoneApi.put(aaaa("www." + zoneName, 86400, "2001:db8::3"));    
 
     // Query resourceRecords
-    System.out.println("\nQuerying resourceRecords...");
-    Iterator<ResourceRecordSet<?>> rrsIterator = recordSetsInZoneApi.iterator();
-    while (rrsIterator.hasNext()) {
-      ResourceRecordSet<?> rrs = rrsIterator.next();
-      System.out.printf("\t%s", rrs.toString());
-      System.out.println();
-    }
+//    System.out.println("\nQuerying resourceRecords...");
+//    Iterator<ResourceRecordSet<?>> rrsIterator = recordSetsInZoneApi.iterator();
+//    while (rrsIterator.hasNext()) {
+//      ResourceRecordSet<?> rrs = rrsIterator.next();
+//      System.out.printf("\t%s", rrs.toString());
+//      System.out.println();
+//    }
 
     // Query resourceRecords by name
     System.out.println("\nQuerying resourceRecord by name...");
@@ -84,10 +84,6 @@ public class Y {
     rr = recordSetsInZoneApi.getByNameAndType("www." + zoneName, "A");
     System.out.println(rr);
     
-    // Delete A resourceRecord
-    System.out.println("\nDeleting A resource record...");
-    recordSetsInZoneApi.deleteByNameAndType("www." + zoneName, "A");
-
     // Add TLSA record
     System.out.println("\nAdding TLSA resource record...");
     Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();
@@ -136,6 +132,18 @@ public class Y {
     
     recordSetsInZoneApi.put(builder.build());
 
+    System.out.println("\nQuerying resourceRecords...");
+    Iterator<ResourceRecordSet<?>> rrsIterator = recordSetsInZoneApi.iterator();
+    while (rrsIterator.hasNext()) {
+      ResourceRecordSet<?> rrs = rrsIterator.next();
+      System.out.printf("\t%s", rrs.toString());
+      System.out.println();
+    }
+    
+    // Delete A resourceRecord
+    System.out.println("\nDeleting A resource record...");
+    recordSetsInZoneApi.deleteByNameAndType("www." + zoneName, "A");
+    
     // Deleting zone
     System.out.println("\nDeleting zone...");
     zoneApi.delete(zoneName);

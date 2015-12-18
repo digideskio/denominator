@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -160,6 +161,8 @@ public class VerisignBindResourceRecordSetApiMockTest {
   @Test
   public void putSameRecord() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
+    server.enqueue(new MockResponse());
+    server.enqueue(new MockResponse().setBody(recordResponse));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
@@ -169,6 +172,10 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     server.assertRequest().hasMethod("GET")
         .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
+    server.assertRequest().hasMethod("DELETE")
+        .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
+    server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
+    server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
 
   @Test
@@ -194,7 +201,8 @@ public class VerisignBindResourceRecordSetApiMockTest {
   @Test
   public void putSameRecordWithDifferentTtl() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
-    server.enqueue(new MockResponse().setBody("[]"));
+    server.enqueue(new MockResponse());
+    server.enqueue(new MockResponse().setBody(recordResponse));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
@@ -204,8 +212,9 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     server.assertRequest().hasMethod("GET")
         .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
-    server.assertRequest().hasMethod("PUT")
-        .hasPath(format("/zones/%s/records/%s", zoneName, "www.denominator.io."));
+    server.assertRequest().hasMethod("DELETE")
+        .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
+    server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
 
@@ -214,7 +223,8 @@ public class VerisignBindResourceRecordSetApiMockTest {
   public void putOneRecordReplacesRRSet() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse2));
     server.enqueue(new MockResponse().setBody(recordsResponse2));
-    server.enqueue(new MockResponse().setBody("[]"));
+    server.enqueue(new MockResponse());
+    server.enqueue(new MockResponse());
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
@@ -233,26 +243,24 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
   @Test
   public void deleteByNameAndTypeWhenPresent() throws Exception {
-    server.enqueue(new MockResponse().setBody(recordsResponse));
     server.enqueue(new MockResponse());
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     api.deleteByNameAndType("www.denominator.io.", "A");
 
     server.assertRequest().hasMethod("DELETE")
-      .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));    
+        .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
   }
 
   @Test
   public void deleteByNameAndTypeWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setBody(recordsResponse));
     server.enqueue(new MockResponse());
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
     api.deleteByNameAndType("www.denominator.io.", "A");
 
     server.assertRequest().hasMethod("DELETE")
-      .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
+        .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
   }
 
   /* @formatter:off */

@@ -77,6 +77,9 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
 
     ResourceRecordSet<?> oldRRSet = getByNameAndType(rrset.name(), rrset.type());
     if (oldRRSet != null) {
+      if (oldRRSet.equals(rrset)) {
+        return;
+      }
       api.deleteResourceRecord(zoneName, rrset.name(), rrset.type());
     }
 

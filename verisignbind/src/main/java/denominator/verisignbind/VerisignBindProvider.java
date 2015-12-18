@@ -31,7 +31,6 @@ import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 
 public class VerisignBindProvider extends BasicProvider {
-  // private static final String DEFAULT_URL = "http://10.239.30.206:8001/api/v1/";
   private static final String DEFAULT_URL = "http://127.0.0.1:8080/api/v1/";
 
   private final String url;
@@ -57,7 +56,7 @@ public class VerisignBindProvider extends BasicProvider {
   @Override
   public Set<String> basicRecordTypes() {
     Set<String> types = new LinkedHashSet<String>();
-    types.addAll(Arrays.asList("A", "AAAA", "CNAME", "MX", "NAPTR", "NS", "PTR", "SRV", "TXT"));
+    types.addAll(Arrays.asList("A", "AAAA", "CNAME", "NAPTR", "NS", "PTR", "SRV", "TXT"));
     return types;
   }
 
@@ -68,8 +67,9 @@ public class VerisignBindProvider extends BasicProvider {
     return options;
   }
 
-  @dagger.Module(injects = {DNSApiManager.class}, complete = false,  overrides = true, includes = {
-      NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class, OnlyBasicResourceRecordSets.class, FeignModule.class})
+  @dagger.Module(injects = {DNSApiManager.class}, complete = false, overrides = true, includes = {
+      NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class,
+      OnlyBasicResourceRecordSets.class, FeignModule.class})
   public static final class Module {
 
     @Provides
@@ -103,12 +103,12 @@ public class VerisignBindProvider extends BasicProvider {
 
     @Provides
     Logger logger() {
-      return new Logger.NoOpLogger();
+       return new Logger.NoOpLogger();
     }
 
     @Provides
     Logger.Level logLevel() {
-      return Logger.Level.NONE;
+       return Logger.Level.NONE;
     }
 
     @Provides
@@ -118,18 +118,12 @@ public class VerisignBindProvider extends BasicProvider {
       Options options = new Options(10 * 1000, 10 * 60 * 1000);
       Decoder decoder = decoder();
 
-      return Feign.builder()
-          .logger(logger)
-          .logLevel(logLevel)
-          .options(options)
-          .encoder(new GsonEncoder())
-          .decoder(decoder)
-          .build();
+      return Feign.builder().logger(logger).logLevel(logLevel).options(options)
+          .encoder(new GsonEncoder()).decoder(decoder).build();
     }
 
     static Decoder decoder() {
-      return new GsonDecoder(Arrays.<TypeAdapter<?>>asList(
-          new ZoneListAdapter(),
+      return new GsonDecoder(Arrays.<TypeAdapter<?>>asList(new ZoneListAdapter(),
           new ResourceRecordListAdapter()));
     }
   }

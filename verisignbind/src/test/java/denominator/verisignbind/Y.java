@@ -3,12 +3,20 @@ package denominator.verisignbind;
 import static denominator.CredentialsConfiguration.credentials;
 import static denominator.model.ResourceRecordSets.a;
 import static denominator.model.ResourceRecordSets.aaaa;
+import static denominator.model.ResourceRecordSets.txt;
+import static denominator.model.ResourceRecordSets.mx;
+import static denominator.model.ResourceRecordSets.srv;
+import static denominator.model.ResourceRecordSets.spf;
+import static denominator.model.ResourceRecordSets.ptr;
+import static denominator.model.ResourceRecordSets.naptr;
+import static denominator.model.ResourceRecordSets.ns;
+import static denominator.model.ResourceRecordSets.cname;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import static java.util.Arrays.asList;
 
+import static java.util.Arrays.asList;
 import denominator.DNSApiManager;
 import denominator.Denominator;
 import denominator.ZoneApi;
@@ -75,6 +83,40 @@ public class Y {
     rr = recordSetsInZoneApi.getByNameAndType("www." + zoneName, "A");
     System.out.println(rr);
 
+    // Add TXT resourceRecord
+    System.out.println("\nAdding TXT resource record...");
+    recordSetsInZoneApi.put(txt(zoneName, 86400, "Sample TXT record"));
+    
+    // Add SRV resourceRecord
+    System.out.println("\nAdding SRV resource record...");
+    recordSetsInZoneApi.put(srv(zoneName, 86400, "0 1 80 www.example.io."));
+    
+    // Add MX resourceRecord
+    System.out.println("\nAdding MX resource record...");
+    recordSetsInZoneApi.put(a("mx1." + zoneName, 86400, "127.0.0.20"));
+    recordSetsInZoneApi.put(mx(zoneName, 86400, "10 mx1." + zoneName));
+    
+    // Add SPF resourceRecord
+    System.out.println("\nAdding SPF resource record...");
+    recordSetsInZoneApi.put(spf(zoneName, 86400, "v=spf1 a mx -all"));
+    
+    // Add PTR resourceRecord
+    System.out.println("\nAdding PTR resource record...");
+    recordSetsInZoneApi.put(ptr(zoneName, 86400, "ptr1." + zoneName));
+    
+    // Add NAPTR resourceRecord
+    System.out.println("\nAdding NAPTR resource record...");
+    recordSetsInZoneApi.put(naptr(zoneName, 86400, "1 1 U E2U+sip !^.*$!sip:service@example.io! ."));
+    
+    // Add CNAME resourceRecord
+    System.out.println("\nAdding CNAME resource record...");
+    recordSetsInZoneApi.put(cname(zoneName, 86400, "www." + zoneName));
+    
+    // Add NS resourceRecord
+    System.out.println("\nAdding NS resource record...");
+    recordSetsInZoneApi.put(a("ns1." + zoneName, 86400, "127.0.0.30"));
+    recordSetsInZoneApi.put(ns(zoneName, 86400, "ns1." + zoneName));
+    
     // Add TLSA record
     System.out.println("\nAdding TLSA resource record...");
     Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();
@@ -125,6 +167,8 @@ public class Y {
 
     recordSetsInZoneApi.put(builder.build());
 
+//    recordSetsInZoneApi.deleteByNameAndType("ns1." + zoneName, "NS");
+    
     System.out.println("\nQuerying resourceRecords...");
     Iterator<ResourceRecordSet<?>> rrsIterator = recordSetsInZoneApi.iterator();
     while (rrsIterator.hasNext()) {
@@ -136,6 +180,7 @@ public class Y {
     // Delete A resourceRecord
     System.out.println("\nDeleting A resource record...");
     recordSetsInZoneApi.deleteByNameAndType("www." + zoneName, "A");
+    
 
     // Deleting zone
     System.out.println("\nDeleting zone...");

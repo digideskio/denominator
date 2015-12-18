@@ -57,33 +57,24 @@ public class Y {
     // Add A resourceRecord
     System.out.println("\nAdding A resource record...");
     recordSetsInZoneApi.put(a("www." + zoneName, 86400, asList("127.0.0.1", "198.51.100.1")));
-//    recordSetsInZoneApi.put(a("www." + zoneName, 86400, "127.0.0.1"));
-    
+    // recordSetsInZoneApi.put(a("www." + zoneName, 86400, "127.0.0.1"));
+
     // Add A resourceRecord
     System.out.println("\nAdding AAAA resource record...");
-    recordSetsInZoneApi.put(aaaa("www." + zoneName, 86400, "2001:db8::3"));    
-
-    // Query resourceRecords
-//    System.out.println("\nQuerying resourceRecords...");
-//    Iterator<ResourceRecordSet<?>> rrsIterator = recordSetsInZoneApi.iterator();
-//    while (rrsIterator.hasNext()) {
-//      ResourceRecordSet<?> rrs = rrsIterator.next();
-//      System.out.printf("\t%s", rrs.toString());
-//      System.out.println();
-//    }
+    recordSetsInZoneApi.put(aaaa("www." + zoneName, 86400, "2001:db8::3"));
 
     // Query resourceRecords by name
     System.out.println("\nQuerying resourceRecord by name...");
-    ResourceRecordSet<?>  rr = recordSetsInZoneApi.getByNameAndType("www." + zoneName, "A");
+    ResourceRecordSet<?> rr = recordSetsInZoneApi.getByNameAndType("www." + zoneName, "A");
     System.out.println(rr);
-    
+
     System.out.println("\nUpdating A resource record...");
     recordSetsInZoneApi.put(a("www." + zoneName, 1234, asList("127.0.0.1", "198.51.100.1")));
 
     System.out.println("\nQuerying resourceRecord by name...");
     rr = recordSetsInZoneApi.getByNameAndType("www." + zoneName, "A");
     System.out.println(rr);
-    
+
     // Add TLSA record
     System.out.println("\nAdding TLSA resource record...");
     Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();
@@ -108,12 +99,14 @@ public class Y {
     recordSetsInZoneApi.put(ResourceRecordSet.builder()
         .name("8812f49354927f48679bba15b670_smimecert." + zoneName).type("SMIMEA").add(smimeaData)
         .build());
-    
-    // Add multiple SMIMEA records    
+
+    // Add multiple SMIMEA records
     System.out.println("\nAdding multiple SMIMEA resource records...");
-    
-    Builder<Map<String, Object>> builder = ResourceRecordSet.builder().name("8812f49354927f48679bba15b670._smimecert." + zoneName).type("SMIMEA");
-    
+
+    Builder<Map<String, Object>> builder =
+        ResourceRecordSet.builder().name("8812f49354927f48679bba15b670._smimecert." + zoneName)
+            .type("SMIMEA");
+
     Map<String, Object> smimeaData1 = new LinkedHashMap<String, Object>();
     smimeaData1.put("certUsage", "2");
     smimeaData1.put("selector", "0");
@@ -121,7 +114,7 @@ public class Y {
     smimeaData1.put("certificateAssociationData",
         "b760c12119c388736da724df1224d21dfd23bf03366c286de1a4125369ef7de0");
     builder.add(smimeaData1);
-        
+
     Map<String, Object> smimeaData2 = new LinkedHashMap<String, Object>();
     smimeaData2.put("certUsage", "3");
     smimeaData2.put("selector", "0");
@@ -129,7 +122,7 @@ public class Y {
     smimeaData2.put("certificateAssociationData",
         "b760c12119c388736da724df1224d21dfd23bf03366c286de1a4125369ef7de0");
     builder.add(smimeaData2);
-    
+
     recordSetsInZoneApi.put(builder.build());
 
     System.out.println("\nQuerying resourceRecords...");
@@ -139,11 +132,11 @@ public class Y {
       System.out.printf("\t%s", rrs.toString());
       System.out.println();
     }
-    
+
     // Delete A resourceRecord
     System.out.println("\nDeleting A resource record...");
     recordSetsInZoneApi.deleteByNameAndType("www." + zoneName, "A");
-    
+
     // Deleting zone
     System.out.println("\nDeleting zone...");
     zoneApi.delete(zoneName);

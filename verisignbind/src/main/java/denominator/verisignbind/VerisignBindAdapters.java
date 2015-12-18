@@ -33,7 +33,7 @@ final class VerisignBindAdapters {
 
     @Override
     protected String jsonKey() {
-      return "zones";
+      return "";
     }
 
     protected Zone build(JsonReader reader) throws IOException {
@@ -65,7 +65,7 @@ final class VerisignBindAdapters {
 
     @Override
     protected String jsonKey() {
-      return "records";
+      return "";
     }
 
     protected ResourceRecord build(JsonReader reader) throws IOException {

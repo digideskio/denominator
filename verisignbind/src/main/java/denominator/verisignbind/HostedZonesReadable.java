@@ -16,7 +16,7 @@ public class HostedZonesReadable implements CheckConnection {
   @Override
   public boolean ok() {
     try {
-       return api.getZones() != null;
+      return api.getZones() != null;
     } catch (RuntimeException e) {
       return false;
     }

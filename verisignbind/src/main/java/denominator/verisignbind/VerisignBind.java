@@ -44,8 +44,8 @@ interface VerisignBind {
   List<ResourceRecord> getResourceRecords(@Param("zone_id") String zoneId);
 
   @RequestLine("GET /zones/{zone_id}/records/{name}?type={type}")
-  List<ResourceRecord> getResourceRecord(@Param("zone_id") String zoneId, @Param("name") String name,
-      @Param("type") String type);
+  List<ResourceRecord> getResourceRecord(@Param("zone_id") String zoneId,
+      @Param("name") String name, @Param("type") String type);
 
   @RequestLine("DELETE /zones/{zone_id}/records/{name}?type={type}")
   void deleteResourceRecord(@Param("zone_id") String zoneId, @Param("name") String name,

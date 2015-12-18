@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -72,7 +71,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
         .containsExactlyRecords(AData.create("127.0.0.1"), AData.create("127.0.0.10"));
 
     assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("AAAA").hasTtl(86400)
-        .containsExactlyRecords(AAAAData.create("2001:db8::3"));
+        .containsExactlyRecords(AAAAData.create("2001:db8::3".toUpperCase()));
 
     server.assertRequest().hasMethod("GET")
         .hasPath(format("/zones/%s/records/%s", zoneName, "www.denominator.io."));

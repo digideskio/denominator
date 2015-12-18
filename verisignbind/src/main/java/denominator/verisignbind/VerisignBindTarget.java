@@ -65,10 +65,10 @@ final class VerisignBindTarget implements Target<VerisignBind> {
     in.insert(0, url());
     in.header("Host", URI.create(in.url()).getHost());
     in.header("Content-Type", "application/json");
-    
-    String authHeader = getAuthHeader(username, password);    
+
+    String authHeader = getAuthHeader(username, password);
     in.header("Authorization", authHeader);
-        
+
     return in.request();
   }
 

@@ -34,26 +34,14 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
 
     if (record.getType().equalsIgnoreCase("TLSA")) {
       String[] rdata = record.getRdata().split(" ");
-      
-      Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();            
-      tlsaData.put("certUsage", rdata[0]);
-      tlsaData.put("selector", rdata[1]);
-      tlsaData.put("matchingType", rdata[2]);
-      tlsaData.put("certificateAssociationData", rdata[3]);
-      builder.add(tlsaData);
+      builder.add(prepareTLSAData(rdata));
     } else if (record.getType().equalsIgnoreCase("SMIMEA")) {
       String[] rdata = record.getRdata().split(" ");
-      
-      Map<String, Object> smimeaData = new LinkedHashMap<String, Object>();
-      smimeaData.put("certUsage", rdata[0]);
-      smimeaData.put("selector", rdata[1]);
-      smimeaData.put("matchingType", rdata[2]);
-      smimeaData.put("certificateAssociationData",rdata[3]);
-      builder.add(smimeaData);
+      builder.add(prepareSMIMEAData(rdata));
     } else {
       builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
     }
-        
+
     while (hasNext()) {
       ResourceRecord next = peekingIterator.peek();
       if (next == null) {
@@ -64,25 +52,13 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
         next = peekingIterator.next();
         if (record.getType().equalsIgnoreCase("TLSA")) {
           String[] rdata = next.getRdata().split(" ");
-          
-          Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();            
-          tlsaData.put("certUsage", rdata[0]);
-          tlsaData.put("selector", rdata[1]);
-          tlsaData.put("matchingType", rdata[2]);
-          tlsaData.put("certificateAssociationData", rdata[3]);
-          builder.add(tlsaData);
+          builder.add(prepareTLSAData(rdata));
         } else if (record.getType().equalsIgnoreCase("SMIMEA")) {
           String[] rdata = next.getRdata().split(" ");
-          
-          Map<String, Object> smimeaData = new LinkedHashMap<String, Object>();
-          smimeaData.put("certUsage", rdata[0]);
-          smimeaData.put("selector", rdata[1]);
-          smimeaData.put("matchingType", rdata[2]);
-          smimeaData.put("certificateAssociationData",rdata[3]);
-          builder.add(smimeaData);
+          builder.add(prepareSMIMEAData(rdata));
         } else {
           builder.add(getRRTypeAndRdata(record.getType(), next.getRdata()));
-        }                
+        }
       } else {
         break;
       }
@@ -100,4 +76,23 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
     return actual.getName().equals(expected.getName())
         && actual.getType().equals(expected.getType());
   }
+
+  public static Map<String, Object> prepareTLSAData(String[] rdata) {
+    Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();
+    tlsaData.put("certUsage", rdata[0]);
+    tlsaData.put("selector", rdata[1]);
+    tlsaData.put("matchingType", rdata[2]);
+    tlsaData.put("certificateAssociationData", rdata[3]);
+    return tlsaData;
+  }
+
+  public static Map<String, Object> prepareSMIMEAData(String[] rdata) {
+    Map<String, Object> smimeaData = new LinkedHashMap<String, Object>();
+    smimeaData.put("certUsage", rdata[0]);
+    smimeaData.put("selector", rdata[1]);
+    smimeaData.put("matchingType", rdata[2]);
+    smimeaData.put("certificateAssociationData", rdata[3]);
+    return smimeaData;
+  }
+
 }

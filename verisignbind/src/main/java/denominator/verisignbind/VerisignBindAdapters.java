@@ -1,7 +1,5 @@
 package denominator.verisignbind;
 
-import static com.google.gson.stream.JsonToken.NULL;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;

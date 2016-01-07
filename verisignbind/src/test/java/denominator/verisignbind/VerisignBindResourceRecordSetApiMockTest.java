@@ -8,7 +8,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 

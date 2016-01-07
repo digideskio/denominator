@@ -9,7 +9,7 @@ import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
 
-@Headers({"Content-Type: application/json"})
+@Headers({ "Content-Type: application/json" })
 interface VerisignBind {
 
   @RequestLine("POST /zones")

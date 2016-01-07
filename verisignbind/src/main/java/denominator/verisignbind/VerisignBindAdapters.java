@@ -68,7 +68,7 @@ final class VerisignBindAdapters {
     }
   }
 
-  static abstract class ListAdapter<X> extends TypeAdapter<List<X>> {
+  abstract static class ListAdapter<X> extends TypeAdapter<List<X>> {
     protected abstract X build(JsonReader reader) throws IOException;
 
     @Override

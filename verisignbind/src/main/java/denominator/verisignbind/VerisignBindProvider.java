@@ -67,9 +67,9 @@ public class VerisignBindProvider extends BasicProvider {
     return options;
   }
 
-  @dagger.Module(injects = {DNSApiManager.class}, complete = false, overrides = true,
-      includes = {NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class,
-          OnlyBasicResourceRecordSets.class, FeignModule.class})
+  @dagger.Module(injects = { DNSApiManager.class }, complete = false, overrides = true,
+      includes = { NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class,
+          OnlyBasicResourceRecordSets.class, FeignModule.class })
   public static final class Module {
 
     @Provides

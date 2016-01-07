@@ -27,9 +27,8 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
   @Override
   public ResourceRecordSet<?> next() {
     ResourceRecord record = peekingIterator.next();
-    Builder<Map<String, Object>> builder =
-        ResourceRecordSet.builder().name(noFinalDot(record.getName())).type(record.getType())
-            .ttl(record.getTtl());
+    Builder<Map<String, Object>> builder = ResourceRecordSet.builder()
+        .name(noFinalDot(record.getName())).type(record.getType()).ttl(record.getTtl());
 
     builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
 
@@ -56,7 +55,7 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
     return actual.getName().equals(expected.getName())
         && actual.getType().equals(expected.getType());
   }
-  
+
   private static String noFinalDot(String qname) {
     return qname.endsWith(".") ? qname.substring(0, qname.length() - 1) : qname;
   }

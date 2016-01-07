@@ -67,9 +67,9 @@ public class VerisignBindProvider extends BasicProvider {
     return options;
   }
 
-  @dagger.Module(injects = {DNSApiManager.class}, complete = false, overrides = true, includes = {
-      NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class,
-      OnlyBasicResourceRecordSets.class, FeignModule.class})
+  @dagger.Module(injects = {DNSApiManager.class}, complete = false, overrides = true,
+      includes = {NothingToClose.class, WeightedUnsupported.class, GeoUnsupported.class,
+          OnlyBasicResourceRecordSets.class, FeignModule.class})
   public static final class Module {
 
     @Provides
@@ -103,12 +103,12 @@ public class VerisignBindProvider extends BasicProvider {
 
     @Provides
     Logger logger() {
-       return new Logger.NoOpLogger();
+      return new Logger.NoOpLogger();
     }
 
     @Provides
     Logger.Level logLevel() {
-       return Logger.Level.NONE;
+      return Logger.Level.NONE;
     }
 
     @Provides
@@ -123,8 +123,8 @@ public class VerisignBindProvider extends BasicProvider {
     }
 
     static Decoder decoder() {
-      return new GsonDecoder(Arrays.<TypeAdapter<?>>asList(new ZoneListAdapter(),
-          new ResourceRecordListAdapter()));
+      return new GsonDecoder(
+          Arrays.<TypeAdapter<?>>asList(new ZoneListAdapter(), new ResourceRecordListAdapter()));
     }
   }
 }

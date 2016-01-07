@@ -56,8 +56,8 @@ public class VerisignBindProviderTest {
   @Test
   public void testCredentialsRequired() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("no credentials supplied. " + PROVIDER.name()
-        + " requires username,password");
+    thrown.expectMessage(
+        "no credentials supplied. " + PROVIDER.name() + " requires username,password");
 
     create(PROVIDER).api().zones().iterator().hasNext();
   }
@@ -65,8 +65,8 @@ public class VerisignBindProviderTest {
   @Test
   public void testTwoPartCredentialsRequired() {
     thrown.expect(IllegalArgumentException.class);
-    thrown.expectMessage("incorrect credentials supplied. " + PROVIDER.name()
-        + " requires username,password");
+    thrown.expectMessage(
+        "incorrect credentials supplied. " + PROVIDER.name() + " requires username,password");
 
     create(PROVIDER, credentials("customer", "username", "password")).api().zones().iterator()
         .hasNext();

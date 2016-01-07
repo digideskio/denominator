@@ -66,12 +66,8 @@ public class VerisignBindZoneApiMockTest {
     server.assertRequest().hasMethod("POST").hasPath("/zones")
         .hasBody("{\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
 
-    server
-        .assertRequest()
-        .hasMethod("PUT")
-        .hasPath("/zones/denominator.io")
-        .hasBody(
-            "{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
+    server.assertRequest().hasMethod("PUT").hasPath("/zones/denominator.io").hasBody(
+        "{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
   }
 
   @Test
@@ -86,12 +82,8 @@ public class VerisignBindZoneApiMockTest {
     server.assertRequest().hasMethod("POST").hasPath("/zones")
         .hasBody("{\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
 
-    server
-        .assertRequest()
-        .hasMethod("PUT")
-        .hasPath("/zones/denominator.io")
-        .hasBody(
-            "{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
+    server.assertRequest().hasMethod("PUT").hasPath("/zones/denominator.io").hasBody(
+        "{\"id\":\"denominator.io\",\"name\":\"denominator.io\",\"ttl\":86400,\"email\":\"nil@denominator.io\"}");
 
   }
 
@@ -107,8 +99,8 @@ public class VerisignBindZoneApiMockTest {
 
   @Test
   public void deleteWhenAbsent() throws Exception {
-    server.enqueue(new MockResponse().setResponseCode(404).setBody(
-        "{\"code\": 404, \"reason\": \"zone not found\"}"));
+    server.enqueue(new MockResponse().setResponseCode(404)
+        .setBody("{\"code\": 404, \"reason\": \"zone not found\"}"));
 
     ZoneApi api = server.connect().api().zones();
     api.delete(zoneName);

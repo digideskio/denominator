@@ -30,9 +30,8 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
 
-    assertThat(api.iterator()).containsExactly(
-        ResourceRecordSet.builder().name("www.denominator.io").type("A").ttl(86400)
-            .add(Util.toMap("A", "127.0.0.1")).build());
+    assertThat(api.iterator()).containsExactly(ResourceRecordSet.builder()
+        .name("www.denominator.io").type("A").ttl(86400).add(Util.toMap("A", "127.0.0.1")).build());
 
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
@@ -170,9 +169,9 @@ public class VerisignBindResourceRecordSetApiMockTest {
     assertThat(api.iterator()).hasSize(1);
 
     server.assertRequest().hasMethod("GET")
-    .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
+        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
     server.assertRequest().hasMethod("DELETE")
-    .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
+        .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
     server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }

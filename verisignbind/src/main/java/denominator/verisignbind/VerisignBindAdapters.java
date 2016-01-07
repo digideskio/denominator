@@ -50,7 +50,7 @@ final class VerisignBindAdapters {
 
       while (reader.hasNext()) {
         String key = reader.nextName();
-      
+
         if (key.equals("name")) {
           record.name = reader.nextString();
         } else if (key.equals("type")) {

@@ -111,6 +111,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
   }
 
   private static HashMap<String, ByTypeMapper> mappers = new HashMap<String, ByTypeMapper>();
+
   static {
     mappers.put("tlsa", new ByTypeMapper() {
       // Util.toMap() does not know TLSA records

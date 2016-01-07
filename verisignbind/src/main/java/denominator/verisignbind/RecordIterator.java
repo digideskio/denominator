@@ -4,7 +4,6 @@ import static denominator.common.Util.peekingIterator;
 import static denominator.verisignbind.VerisignBindResourceRecordSetApi.getRRTypeAndRdata;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import denominator.common.PeekingIterator;
@@ -29,39 +28,14 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
   public ResourceRecordSet<?> next() {
     ResourceRecord record = peekingIterator.next();
     Builder<Map<String, Object>> builder =
-        ResourceRecordSet.builder().name(record.getName()).type(record.getType())
+        ResourceRecordSet.builder().name(noFinalDot(record.getName())).type(record.getType())
             .ttl(record.getTtl());
 
-    if (record.getType().equalsIgnoreCase("TLSA")) {
-      String[] rdata = record.getRdata().split(" ");
-      builder.add(prepareTLSAData(rdata));
-    } else if (record.getType().equalsIgnoreCase("SMIMEA")) {
-      String[] rdata = record.getRdata().split(" ");
-      builder.add(prepareSMIMEAData(rdata));
-    } else {
-      builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
-    }
+    builder.add(getRRTypeAndRdata(record.getType(), record.getRdata()));
 
-    while (hasNext()) {
-      ResourceRecord next = peekingIterator.peek();
-      if (next == null) {
-        break;
-      }
-
-      if (nameAndTypeEquals(next, record)) {
-        next = peekingIterator.next();
-        if (record.getType().equalsIgnoreCase("TLSA")) {
-          String[] rdata = next.getRdata().split(" ");
-          builder.add(prepareTLSAData(rdata));
-        } else if (record.getType().equalsIgnoreCase("SMIMEA")) {
-          String[] rdata = next.getRdata().split(" ");
-          builder.add(prepareSMIMEAData(rdata));
-        } else {
-          builder.add(getRRTypeAndRdata(record.getType(), next.getRdata()));
-        }
-      } else {
-        break;
-      }
+    while (hasNextWithNameAndType(record)) {
+      ResourceRecord next = peekingIterator.next();
+      builder.add(getRRTypeAndRdata(record.getType(), next.getRdata()));
     }
 
     return builder.build();
@@ -72,27 +46,18 @@ class RecordIterator implements Iterator<ResourceRecordSet<?>> {
     throw new UnsupportedOperationException();
   }
 
+  private boolean hasNextWithNameAndType(ResourceRecord prev) {
+    ResourceRecord next = peekingIterator.hasNext() ? peekingIterator.peek() : null;
+
+    return next != null && nameAndTypeEquals(prev, next);
+  }
+
   private static boolean nameAndTypeEquals(ResourceRecord actual, ResourceRecord expected) {
     return actual.getName().equals(expected.getName())
         && actual.getType().equals(expected.getType());
   }
-
-  public static Map<String, Object> prepareTLSAData(String[] rdata) {
-    Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();
-    tlsaData.put("certUsage", rdata[0]);
-    tlsaData.put("selector", rdata[1]);
-    tlsaData.put("matchingType", rdata[2]);
-    tlsaData.put("certificateAssociationData", rdata[3]);
-    return tlsaData;
+  
+  private static String noFinalDot(String qname) {
+    return qname.endsWith(".") ? qname.substring(0, qname.length() - 1) : qname;
   }
-
-  public static Map<String, Object> prepareSMIMEAData(String[] rdata) {
-    Map<String, Object> smimeaData = new LinkedHashMap<String, Object>();
-    smimeaData.put("certUsage", rdata[0]);
-    smimeaData.put("selector", rdata[1]);
-    smimeaData.put("matchingType", rdata[2]);
-    smimeaData.put("certificateAssociationData", rdata[3]);
-    return smimeaData;
-  }
-
 }

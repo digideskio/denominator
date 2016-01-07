@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -31,7 +32,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
 
     assertThat(api.iterator()).containsExactly(
-        ResourceRecordSet.builder().name("www.denominator.io.").type("A").ttl(86400)
+        ResourceRecordSet.builder().name("www.denominator.io").type("A").ttl(86400)
             .add(Util.toMap("A", "127.0.0.1")).build());
 
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
@@ -53,7 +54,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
     server.enqueue(new MockResponse().setBody(recordsResponse));
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
 
-    assertThat(api.iterateByName("www.denominator.io.").next()).hasName("www.denominator.io.")
+    assertThat(api.iterateByName("www.denominator.io.").next()).hasName("www.denominator.io")
         .hasType("A").hasTtl(86400).containsExactlyRecords(AData.create("127.0.0.1"));
 
     server.assertRequest().hasMethod("GET")
@@ -67,10 +68,10 @@ public class VerisignBindResourceRecordSetApiMockTest {
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone(zoneName);
 
     Iterator<ResourceRecordSet<?>> rrsets = api.iterateByName("www.denominator.io.");
-    assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("A").hasTtl(86400)
+    assertThat(rrsets.next()).hasName("www.denominator.io").hasType("A").hasTtl(86400)
         .containsExactlyRecords(AData.create("127.0.0.1"), AData.create("127.0.0.10"));
 
-    assertThat(rrsets.next()).hasName("www.denominator.io.").hasType("AAAA").hasTtl(86400)
+    assertThat(rrsets.next()).hasName("www.denominator.io").hasType("AAAA").hasTtl(86400)
         .containsExactlyRecords(AAAAData.create("2001:db8::3".toUpperCase()));
 
     server.assertRequest().hasMethod("GET")
@@ -95,7 +96,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
 
-    assertThat(api.getByNameAndType("www.denominator.io.", "A")).hasName("www.denominator.io.")
+    assertThat(api.getByNameAndType("www.denominator.io.", "A")).hasName("www.denominator.io")
         .hasType("A").hasTtl(86400).containsExactlyRecords(AData.create("127.0.0.1"));
 
     server.assertRequest().hasMethod("GET")
@@ -108,7 +109,7 @@ public class VerisignBindResourceRecordSetApiMockTest {
     server.enqueue(new MockResponse().setBody(recordsResponseMultiple));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
-    assertThat(api.getByNameAndType("www.denominator.io.", "A")).hasName("www.denominator.io.")
+    assertThat(api.getByNameAndType("www.denominator.io.", "A")).hasName("www.denominator.io")
         .hasType("A").hasTtl(86400)
         .containsExactlyRecords(AData.create("127.0.0.1"), AData.create("127.0.0.10"));
 
@@ -160,6 +161,8 @@ public class VerisignBindResourceRecordSetApiMockTest {
   @Test
   public void putSameRecord() throws Exception {
     server.enqueue(new MockResponse().setBody(recordsResponse));
+    server.enqueue(new MockResponse().setBody("[]"));
+    server.enqueue(new MockResponse().setBody(recordsResponse));
     server.enqueue(new MockResponse().setBody(recordsResponse));
 
     ResourceRecordSetApi api = server.connect().api().basicRecordSetsInZone("denominator.io.");
@@ -168,7 +171,10 @@ public class VerisignBindResourceRecordSetApiMockTest {
     assertThat(api.iterator()).hasSize(1);
 
     server.assertRequest().hasMethod("GET")
-        .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
+    .hasPath(format("/zones/%s/records/%s?type=A", zoneName, "www.denominator.io."));
+    server.assertRequest().hasMethod("DELETE")
+    .hasPath(format("/zones/%s/records/%s?type=%s", zoneName, "www.denominator.io.", "A"));
+    server.assertRequest().hasMethod("POST").hasPath(format("/zones/%s/records", zoneName));
     server.assertRequest().hasMethod("GET").hasPath(format("/zones/%s/records", zoneName));
   }
 

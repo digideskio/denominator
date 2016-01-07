@@ -5,6 +5,7 @@ import static denominator.common.Preconditions.checkNotNull;
 import static denominator.common.Util.join;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,11 +16,10 @@ import javax.inject.Inject;
 import denominator.ResourceRecordSetApi;
 import denominator.common.Util;
 import denominator.model.ResourceRecordSet;
-import denominator.model.ResourceRecordSet.Builder;
 import denominator.verisignbind.VerisignBindAdapters.ResourceRecord;
 
 final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
-
+  private static final ArrayList<ResourceRecord> EMPTY_RRLIST = new ArrayList<ResourceRecord>();
   private final VerisignBind api;
   private final String zoneName;
 
@@ -28,44 +28,30 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
     this.zoneName = zoneName;
   }
 
+  private static List<ResourceRecord> nonNull(List<ResourceRecord> records) {
+    return records != null ? records : EMPTY_RRLIST;
+  }
+
   @Override
   public Iterator<ResourceRecordSet<?>> iterator() {
-    return new RecordIterator(api.getResourceRecords(zoneName).iterator());
+    List<ResourceRecord> records = api.getResourceRecords(zoneName);
+
+    return new RecordIterator(nonNull(records).iterator());
   }
 
   @Override
   public Iterator<ResourceRecordSet<?>> iterateByName(String name) {
     List<ResourceRecord> records = api.getResourceRecord(zoneName, name, null);
-    if (records == null) {
-      records = new ArrayList<VerisignBindAdapters.ResourceRecord>();
-    }
 
-    return new RecordIterator(records.iterator());
+    return new RecordIterator(nonNull(records).iterator());
   }
 
   @Override
   public ResourceRecordSet<?> getByNameAndType(String name, String type) {
     List<ResourceRecord> records = api.getResourceRecord(zoneName, name, type);
-    if (records != null && !records.isEmpty()) {
-      ResourceRecord record = records.get(0);
-      Builder<Map<String, Object>> builder =
-          ResourceRecordSet.builder().name(name).type(record.getType()).ttl(record.getTtl());
+    RecordIterator i = new RecordIterator(nonNull(records).iterator());
 
-      for (ResourceRecord resourceRecord : records) {
-        if (record.getType().equalsIgnoreCase("TLSA")) {
-          String[] rdata = resourceRecord.getRdata().split(" ");
-          builder.add(RecordIterator.prepareTLSAData(rdata));
-        } else if (record.getType().equalsIgnoreCase("SMIMEA")) {
-          String[] rdata = resourceRecord.getRdata().split(" ");
-          builder.add(RecordIterator.prepareSMIMEAData(rdata));
-        } else {
-          builder.add(getRRTypeAndRdata(record.getType(), resourceRecord.getRdata()));
-        }
-      }
-      return builder.build();
-    }
-
-    return null;
+    return i.hasNext() ? i.next() : null;
   }
 
   @Override
@@ -88,12 +74,7 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
     ResourceRecord record = new ResourceRecord();
     record.setName(rrset.name());
     record.setType(rrset.type());
-
-    if (rrset.ttl() != null) {
-      record.setTtl(rrset.ttl());
-    } else {
-      record.setTtl(86400);
-    }
+    record.setTtl(rrset.ttl() != null ? rrset.ttl() : 86400);
 
     for (Map<String, Object> rdata : recordsToCreate) {
       LinkedHashMap<String, Object> mutable = new LinkedHashMap<String, Object>(rdata);
@@ -125,11 +106,60 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
     }
   }
 
+  interface ByTypeMapper {
+    Map<String, Object> map(String type, String rdata);
+  }
+
+  private static HashMap<String, ByTypeMapper> mappers = new HashMap<String, ByTypeMapper>();
+  static {
+    mappers.put("tlsa", new ByTypeMapper() {
+      // Util.toMap() does not know TLSA records
+      public Map<String, Object> map(String type, String rdata) {
+        Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();
+        String[] parts = rdata.split(" ");
+
+        tlsaData.put("certUsage", parts[0]);
+        tlsaData.put("selector", parts[1]);
+        tlsaData.put("matchingType", parts[2]);
+        tlsaData.put("certificateAssociationData", parts[3]);
+
+        return tlsaData;
+      }
+    });
+    mappers.put("smimea", new ByTypeMapper() {
+      // Util.toMap() does not know SMIMEA records
+      public Map<String, Object> map(String type, String rdata) {
+        Map<String, Object> smimeaData = new LinkedHashMap<String, Object>();
+        String[] parts = rdata.split(" ");
+
+        smimeaData.put("certUsage", parts[0]);
+        smimeaData.put("selector", parts[1]);
+        smimeaData.put("matchingType", parts[2]);
+        smimeaData.put("certificateAssociationData", parts[3]);
+
+        return smimeaData;
+      }
+    });
+    mappers.put("txt", new ByTypeMapper() {
+      public Map<String, Object> map(String type, String rdata) {
+        return Util.toMap(type, rdata.replace("\"", ""));
+      }
+    });
+    mappers.put("naptr", new ByTypeMapper() {
+      public Map<String, Object> map(String type, String rdata) {
+        return Util.toMap(type, rdata.replace("\"", ""));
+      }
+    });
+    mappers.put("aaaa", new ByTypeMapper() {
+      public Map<String, Object> map(String type, String rdata) {
+        return Util.toMap(type, rdata.toUpperCase());
+      }
+    });
+  }
+
   public static Map<String, Object> getRRTypeAndRdata(String type, String rdata) {
-    rdata = rdata.replace("\"", "");
-    if ("AAAA".equals(type)) {
-      rdata = rdata.toUpperCase();
-    }
-    return Util.toMap(type, rdata);
+    ByTypeMapper mapper = mappers.get(type.toLowerCase());
+
+    return mapper != null ? mapper.map(type, rdata) : Util.toMap(type, rdata);
   }
 }

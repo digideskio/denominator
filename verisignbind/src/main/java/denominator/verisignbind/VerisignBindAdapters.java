@@ -15,7 +15,6 @@ import com.google.gson.stream.JsonWriter;
 import denominator.model.Zone;
 
 final class VerisignBindAdapters {
-
   private static final Comparator<Object> TO_STRING_COMPARATOR = new Comparator<Object>() {
     @Override
     public int compare(Object left, Object right) {
@@ -23,22 +22,11 @@ final class VerisignBindAdapters {
     }
   };
 
-
-  @SuppressWarnings({"unchecked", "hiding"})
-  private static <X> Comparator<X> toStringComparator() {
-    return Comparator.class.cast(TO_STRING_COMPARATOR);
-  }
-
   static class ZoneListAdapter extends ListAdapter<Zone> {
-
-    @Override
-    protected String jsonKey() {
-      return "";
-    }
-
     protected Zone build(JsonReader reader) throws IOException {
       String name = null, id = null, email = null;
       int ttl = -1;
+
       while (reader.hasNext()) {
         String nextName = reader.nextName();
         if (nextName.equals("id")) {
@@ -54,29 +42,22 @@ final class VerisignBindAdapters {
         }
       }
 
-      if (name == null) {
-        return null;
-      }
-      return Zone.create(id, name, ttl, email);
+      return name != null ? Zone.create(id, name, ttl, email) : null;
     }
   }
 
   static class ResourceRecordListAdapter extends ListAdapter<ResourceRecord> {
-
-    @Override
-    protected String jsonKey() {
-      return "";
-    }
-
     protected ResourceRecord build(JsonReader reader) throws IOException {
       ResourceRecord record = new ResourceRecord();
+
       while (reader.hasNext()) {
         String key = reader.nextName();
+      
         if (key.equals("name")) {
           record.name = reader.nextString();
         } else if (key.equals("type")) {
           record.type = reader.nextString();
-        } else if (key.equals("ttl") && reader.peek() != NULL) {
+        } else if (key.equals("ttl")) {
           record.ttl = reader.nextInt();
         } else if (key.equals("rdata")) {
           record.rdata = reader.nextString();
@@ -85,17 +66,11 @@ final class VerisignBindAdapters {
         }
       }
 
-      if (record.name == null) {
-        return null;
-      }
-      return record;
+      return record.name != null ? record : null;
     }
   }
 
-  @SuppressWarnings("hiding")
   static abstract class ListAdapter<X> extends TypeAdapter<List<X>> {
-    protected abstract String jsonKey();
-
     protected abstract X build(JsonReader reader) throws IOException;
 
     @Override
@@ -112,7 +87,8 @@ final class VerisignBindAdapters {
       }
       reader.endArray();
 
-      Collections.sort(elements, toStringComparator());
+      Collections.sort(elements, TO_STRING_COMPARATOR);
+
       return elements;
     }
 

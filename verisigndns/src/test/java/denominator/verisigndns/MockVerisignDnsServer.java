@@ -85,19 +85,19 @@ public class MockVerisignDnsServer extends VerisignDnsProvider implements TestRu
   }
     
   static final String FAULT_TEMPLATE = 
-      "<ns3:Fault xmlns:ns2=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns3=\"http://www.w3.org/2003/05/soap-envelope\">"
-      + "   <ns3:Code>"
-      + "       <ns3:Value>ns3:Receiver</ns3:Value>"
-      + "   </ns3:Code>"
-      + "   <ns3:Reason>"
-      + "       <ns3:Text xml:lang=\"en\">%s</ns3:Text>"
-      + "   </ns3:Reason>"
-      + "   <ns3:Detail>"
-      + "       <ns3:dnsaWSRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
-      + "              <ns3:callSuccess>false</ns3:callSuccess>"
-      + "              <ns3:reason code=\"%s\" description=\"%s\"/>"
-      + "       </ns3:dnsaWSRes>"
-      + "   </ns3:Detail>"
-      + "</ns3:Fault>";  
+      "<Fault xmlns:ns2=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ns3=\"http://www.w3.org/2003/05/soap-envelope\">"
+      + "   <Code>"
+      + "       <Value>Receiver</Value>"
+      + "   </Code>"
+      + "   <Reason>"
+      + "       <Text xml:lang=\"en\">%s</Text>"
+      + "   </Reason>"
+      + "   <Detail>"
+      + "       <dnsaWSRes xmlns=\"urn:com:verisign:dnsa:messaging:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:api:schema:1\">"
+      + "              <callSuccess>false</callSuccess>"
+      + "              <reason code=\"%s\" description=\"%s\"/>"
+      + "       </dnsaWSRes>"
+      + "   </Detail>"
+      + "</Fault>";  
    
 }

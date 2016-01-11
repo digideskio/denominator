@@ -76,7 +76,7 @@ final class VerisignDnsErrorDecoder implements ErrorDecoder {
     public void startElement(String uri, String localName, String qName, Attributes attributes)
         throws SAXException {
 
-      if ("ns3:reason".equals(qName)) {
+      if ("reason".equals(qName)) {
         description = attributes.getValue("description");
         code = attributes.getValue("code");
       }

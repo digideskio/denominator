@@ -225,6 +225,84 @@ public class VerisignDnsResourceRecordSetApiMockTest {
   }
 
   @Test
+  public void deleteTxtRecordWhenPresent() throws Exception {
+    server
+      .enqueue(new MockResponse()
+        .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "   <callSuccess>true</callSuccess>"
+            + "   <totalCount>1</totalCount>"
+            + "   <resourceRecord>"
+            + "       <resourceRecordId>3194811</resourceRecordId>"
+            + "       <owner>www.denominator.io.</owner>"
+            + "       <type>TXT</type>"
+            + "       <ttl>86400</ttl>"
+            + "       <rData>Sample TXT record</rData>"
+            + "   </resourceRecord>"
+            + "</getResourceRecordListRes>"));
+    server
+      .enqueue(new MockResponse()
+        .setBody("<dnsaWSRes:dnsaWSRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:dnsaWSRes=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "     <callSuccess>false</callSuccess>" 
+            + "</dnsaWSRes:dnsaWSRes>"));
+
+    AllProfileResourceRecordSetApi recordSetsInZoneApi =
+        server.connect().api().recordSetsInZone("denominator.io");
+    recordSetsInZoneApi.deleteByNameAndType("www.denominator.io.", "A");
+  }
+  
+  @Test
+  public void deleteTxtRecordWithEmbeddedQuotesWhenPresent() throws Exception {
+    server
+      .enqueue(new MockResponse()
+        .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "   <callSuccess>true</callSuccess>"
+            + "   <totalCount>1</totalCount>"
+            + "   <resourceRecord>"
+            + "       <resourceRecordId>3194811</resourceRecordId>"
+            + "       <owner>www.denominator.io.</owner>"
+            + "       <type>TXT</type>"
+            + "       <ttl>86400</ttl>"
+            + "       <rData>test string 1\" \"test string 2</rData>"
+            + "   </resourceRecord>"
+            + "</getResourceRecordListRes>"));
+    server
+      .enqueue(new MockResponse()
+        .setBody("<dnsaWSRes:dnsaWSRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:dnsaWSRes=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "     <callSuccess>false</callSuccess>" 
+            + "</dnsaWSRes:dnsaWSRes>"));
+
+    AllProfileResourceRecordSetApi recordSetsInZoneApi =
+        server.connect().api().recordSetsInZone("denominator.io");
+    recordSetsInZoneApi.deleteByNameAndType("www.denominator.io.", "A");
+  }  
+  
+  @Test
+  public void deleteTxtRecordWithQuotesWhenPresent() throws Exception {
+    server
+      .enqueue(new MockResponse()
+        .setBody("<getResourceRecordListRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "   <callSuccess>true</callSuccess>"
+            + "   <totalCount>1</totalCount>"
+            + "   <resourceRecord>"
+            + "       <resourceRecordId>3194811</resourceRecordId>"
+            + "       <owner>www.denominator.io.</owner>"
+            + "       <type>TXT</type>"
+            + "       <ttl>86400</ttl>"
+            + "       <rData>\"test string 1\" \"test string 2\"</rData>"
+            + "   </resourceRecord>"
+            + "</getResourceRecordListRes>"));
+    server
+      .enqueue(new MockResponse()
+        .setBody("<dnsaWSRes:dnsaWSRes xmlns=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:dnsaWSRes=\"urn:com:verisign:dnsa:api:schema:1\" xmlns:ns2=\"urn:com:verisign:dnsa:auth:schema:1\" xmlns:ns3=\"urn:com:verisign:dnsa:api:schema:2\" xmlns:ns4=\"urn:com:verisign:dnsa:messaging:schema:1\">"
+            + "     <callSuccess>false</callSuccess>" 
+            + "</dnsaWSRes:dnsaWSRes>"));
+
+    AllProfileResourceRecordSetApi recordSetsInZoneApi =
+        server.connect().api().recordSetsInZone("denominator.io");
+    recordSetsInZoneApi.deleteByNameAndType("www.denominator.io.", "A");
+  }  
+  
+  @Test
   public void deleteWhenAbsent() throws Exception {
     server
         .enqueue(new MockResponse()

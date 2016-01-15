@@ -93,7 +93,6 @@ final class ResourceRecordByNameAndTypeIterator implements Iterator<ResourceReco
 
   private static Map<String, Object> getRRTypeAndRdata(String type, String rdata) {
 
-    rdata = rdata.replace("\"", "");
     try {
       if ("AAAA".equals(type)) {
         rdata = rdata.toUpperCase();

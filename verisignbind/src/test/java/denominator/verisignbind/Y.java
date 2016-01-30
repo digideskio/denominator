@@ -120,9 +120,9 @@
 //    // Add TLSA record
 //    System.out.println("\nAdding TLSA resource record...");
 //    Map<String, Object> tlsaData = new LinkedHashMap<String, Object>();
-//    tlsaData.put("certUsage", "3");
-//    tlsaData.put("selector", "1");
-//    tlsaData.put("matchingType", "1");
+//    tlsaData.put("certUsage", "1");
+//    tlsaData.put("selector", "0");
+//    tlsaData.put("matchingType", "0");
 //    tlsaData.put("certificateAssociationData",
 //        "b760c12119c388736da724df1224d21dfd23bf03366c286de1a4125369ef7de0");
 //
@@ -132,21 +132,21 @@
 //    // Add SMIMEA record
 //    System.out.println("\nAdding SMIMEA resource record...");
 //    Map<String, Object> smimeaData = new LinkedHashMap<String, Object>();
-//    smimeaData.put("certUsage", "3");
-//    smimeaData.put("selector", "1");
-//    smimeaData.put("matchingType", "1");
+//    smimeaData.put("certUsage", "1");
+//    smimeaData.put("selector", "0");
+//    smimeaData.put("matchingType", "0");
 //    smimeaData.put("certificateAssociationData",
 //        "b760c12119c388736da724df1224d21dfd23bf03366c286de1a4125369ef7de0");
 //
 //    recordSetsInZoneApi.put(ResourceRecordSet.builder()
-//        .name("8812f49354927f48679bba15b670_smimecert." + zoneName).type("SMIMEA").add(smimeaData)
+//        .name("8812f49354927f48679bba15b670._smimecert." + zoneName).type("SMIMEA").add(smimeaData)
 //        .build());
 //
 //    // Add multiple SMIMEA records
 //    System.out.println("\nAdding multiple SMIMEA resource records...");
 //
 //    Builder<Map<String, Object>> builder =
-//        ResourceRecordSet.builder().name("8812f49354927f48679bba15b670._smimecert." + zoneName)
+//        ResourceRecordSet.builder().name("8912f49354927f48679bba15b670._smimecert." + zoneName)
 //            .type("SMIMEA");
 //
 //    Map<String, Object> smimeaData1 = new LinkedHashMap<String, Object>();
@@ -176,6 +176,11 @@
 //      System.out.printf("\t%s", rrs.toString());
 //      System.out.println();
 //    }
+//    
+//    // Query resourceRecords by name
+//    System.out.println("\nQuerying resourceRecord by name...");
+//    rr = recordSetsInZoneApi.getByNameAndType("8812f49354927f48679bba15b670._smimecert." + zoneName, "SMIMEA");
+//    System.out.println(rr);
 //
 //    // Delete A resourceRecord
 //    System.out.println("\nDeleting A resource record...");
@@ -185,6 +190,8 @@
 //    // Deleting zone
 //    System.out.println("\nDeleting zone...");
 //    zoneApi.delete(zoneName);
+//    
+//    System.out.println("done.");
 //
 //  }
 //}

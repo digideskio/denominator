@@ -141,6 +141,10 @@ final class VerisignBindResourceRecordSetApi implements ResourceRecordSetApi {
         return smimeaData;
       }
     });
+    
+    mappers.put("type53", mappers.get("smimea"));
+    mappers.put("type65514", mappers.get("smimea"));
+    
     mappers.put("txt", new ByTypeMapper() {
       public Map<String, Object> map(String type, String rdata) {
         return Util.toMap(type, rdata.replace("\"", ""));
